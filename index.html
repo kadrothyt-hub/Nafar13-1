@@ -1,0 +1,1808 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>نفر سیزدهم</title>
+<style>
+:root{--bone:#d9d4c3;--ash:#8d9189;--blood:#a3151c;--ink:#07080a;--glass:rgba(12,14,16,.62);}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;height:100%;background:#000;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;
+  font-family:"Vazirmatn","Noto Naskh Arabic","Noto Sans Arabic",Tahoma,sans-serif;color:var(--bone);}
+#cv{position:fixed;left:0;top:0;width:100%;height:100%;display:block;background:#000;}
+button{font-family:inherit;color:inherit;border:0;background:none;padding:0;cursor:pointer;}
+
+/* زیرنویس */
+#sub{position:fixed;left:50%;bottom:max(18px,env(safe-area-inset-bottom));transform:translateX(-50%);max-width:min(760px,72vw);
+  text-align:center;font-size:clamp(15px,2.6vw,21px);line-height:1.75;padding:.35em .9em;border-radius:6px;
+  background:linear-gradient(rgba(0,0,0,.0),rgba(0,0,0,.55));text-shadow:0 1px 6px #000,0 0 2px #000;opacity:0;transition:opacity .35s;pointer-events:none;z-index:5;}
+#sub.on{opacity:1;}
+#toast{position:fixed;left:50%;top:max(14px,env(safe-area-inset-top));transform:translateX(-50%);font-size:14px;padding:.4em 1em;border:1px solid rgba(217,212,195,.35);
+  background:var(--glass);border-radius:3px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:6;white-space:nowrap;}
+#toast.on{opacity:1;}
+#cnt{position:fixed;left:50%;top:max(52px,calc(env(safe-area-inset-top) + 40px));transform:translateX(-50%);font-size:18px;color:#e8e2cc;letter-spacing:.04em;text-shadow:0 0 8px #000;pointer-events:none;z-index:4;}
+
+/* کنترل‌ها */
+#hud{display:none;}
+#hud.on{display:block;}
+.cb{position:fixed;z-index:7;display:flex;align-items:center;justify-content:center;border-radius:50%;
+  background:rgba(14,16,18,.42);border:1.5px solid rgba(217,212,195,.38);backdrop-filter:blur(2px);
+  font-size:30px;touch-action:none;transition:background .08s,transform .08s;}
+.cb.dn{background:rgba(217,212,195,.26);transform:scale(.94);}
+#bL,#bR,#bRun{display:none!important;}
+
+
+#bBack{right:max(24px,env(safe-area-inset-right));bottom:calc(max(26px,env(safe-area-inset-bottom)) + 104px);width:58px;height:58px;font-size:26px;display:none;border-color:rgba(163,21,28,.8);}
+#bBack.on{display:flex;}
+#bAct{right:max(24px,env(safe-area-inset-right));bottom:max(22px,env(safe-area-inset-bottom));width:92px;height:92px;font-size:15px;display:none;
+  border-color:rgba(232,226,204,.75);background:rgba(40,36,28,.5);flex-direction:column;line-height:1.3;text-align:center;}
+#bAct.on{display:flex;}
+#actLbl{max-width:80px;font-size:13px;color:var(--bone);}
+.mb{position:fixed;top:max(12px,env(safe-area-inset-top));z-index:7;width:46px;height:46px;border-radius:50%;background:rgba(14,16,18,.45);
+  border:1.5px solid rgba(217,212,195,.35);display:flex;align-items:center;justify-content:center;font-size:19px;}
+#bPause{left:max(14px,env(safe-area-inset-left));}
+#bNote{right:max(14px,env(safe-area-inset-right));font-size:13px;}
+#prog{position:fixed;left:50%;bottom:calc(max(22px,env(safe-area-inset-bottom)) + 100px);transform:translateX(-50%);width:200px;height:6px;border:1px solid rgba(217,212,195,.5);background:rgba(0,0,0,.5);display:none;z-index:6;}
+#prog.on{display:block;}
+#progBar{height:100%;width:0;background:var(--bone);}
+
+/* پنل‌ها */
+.panel{position:fixed;left:0;top:0;width:100%;height:100%;display:none;z-index:20;}
+.panel.on{display:flex;}
+#title{flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;
+  background:radial-gradient(ellipse at 50% 55%,rgba(0,0,0,.35),rgba(0,0,0,.88) 78%);}
+#title h1{margin:0;font-size:clamp(54px,12vw,120px);font-weight:900;color:#e9e4d0;letter-spacing:-.01em;line-height:1.05;
+  text-shadow:0 0 28px rgba(163,21,28,.55),3px 0 0 rgba(163,21,28,.55),-3px 0 0 rgba(60,120,170,.35);animation:tg 6s infinite steps(1);}
+@keyframes tg{0%,92%,100%{transform:none;opacity:1}93%{transform:translateX(-6px) skewX(-6deg);opacity:.85}94%{transform:translateX(5px);opacity:1}96%{transform:none}}
+#title .ep{font-size:clamp(15px,2.8vw,22px);color:#a6a99f;margin-bottom:22px;letter-spacing:.08em;text-shadow:0 2px 10px #000;}
+#title:before{content:'';position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.018) 0 1px,transparent 1px 4px);mix-blend-mode:screen;opacity:.35;}
+#title>*{position:relative;z-index:1;}
+.mbtn{box-shadow:0 8px 24px rgba(0,0,0,.35);transition:background .18s,border-color .18s,transform .18s;}
+.mbtn:hover{background:rgba(163,21,28,.18);border-color:rgba(217,212,195,.85);}
+.setting-line{padding:7px 0;border-bottom:1px solid rgba(217,212,195,.08);}
+.sbtn:active{background:rgba(163,21,28,.24);}
+.mbtn{min-width:210px;padding:.7em 1.4em;font-size:19px;border:1.5px solid rgba(217,212,195,.55);background:rgba(10,10,12,.55);color:var(--bone);border-radius:2px;}
+.mbtn:active{background:rgba(217,212,195,.2);}
+#btnCont{display:none;}#btnCont.on{display:block;}
+#title .warn{position:absolute;bottom:max(16px,env(safe-area-inset-bottom));font-size:13px;color:var(--ash);max-width:80vw;line-height:1.7;}
+#card{position:fixed;left:0;top:0;width:100%;height:100%;z-index:19;display:flex;align-items:center;justify-content:center;text-align:center;padding:10vw;
+  font-size:clamp(18px,3.4vw,28px);line-height:2;background:#000;opacity:0;transition:opacity .9s;pointer-events:none;white-space:pre-line;color:#cfcab6;}
+#card.on{opacity:1;}
+body.intro #card{opacity:inherit;}
+
+#note,#keypad,#pause{align-items:center;justify-content:center;background:rgba(0,0,0,.72);}
+.box{width:min(620px,90vw);max-height:84vh;overflow:auto;padding:18px 22px;background:#0e1012;border:1px solid rgba(217,212,195,.35);border-radius:3px;text-align:right;}
+.box h3{margin:14px 0 8px;font-size:17px;color:#e9e4d0;border-bottom:1px solid rgba(217,212,195,.2);padding-bottom:4px;}
+.it{display:flex;flex-direction:column;margin:6px 0;font-size:15px;}.it span{color:var(--ash);font-size:13px;}
+.nt{margin:8px 0;font-size:15px;line-height:1.85;padding-right:10px;border-right:2px solid var(--blood);color:#d9d4c3;}
+.em{color:var(--ash);font-size:14px;}
+#hintBox{margin-top:12px;color:#c9a45b;font-size:15px;line-height:1.8;min-height:1em;}
+.row{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap;}
+.sbtn{padding:.5em 1.1em;border:1px solid rgba(217,212,195,.45);font-size:15px;border-radius:2px;background:rgba(255,255,255,.04);}
+#keypad .box{width:min(330px,88vw);text-align:center;}
+#kpTitle{font-size:17px;margin-bottom:2px;}#kpSub{font-size:13px;color:#c9a45b;min-height:1.4em;margin-bottom:8px;}
+#kpDisp{font-size:34px;letter-spacing:.18em;padding:.25em;background:#050607;border:1px solid rgba(217,212,195,.3);margin-bottom:10px;direction:ltr;font-variant-numeric:tabular-nums;}
+#kpDisp.shake{animation:sk .35s;}
+@keyframes sk{20%{transform:translateX(-9px)}40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+#kpGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;direction:ltr;}
+.kk{padding:.7em 0;font-size:21px;border:1px solid rgba(217,212,195,.35);background:rgba(255,255,255,.04);border-radius:2px;}
+.kk:active{background:rgba(217,212,195,.22);}
+#pause .box,#settings .box{width:min(440px,90vw);text-align:center;}
+#settings{align-items:center;justify-content:center;background:rgba(0,0,0,.84);}
+.setting-line{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 0;color:var(--bone);font-size:14px}
+.setting-line input{width:48%;accent-color:#a3151c}
+.setting-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+#portrait{display:none;position:fixed;inset:0;z-index:50;background:#050607;color:#e9e4d0;align-items:center;justify-content:center;text-align:center;padding:28px;font-size:20px;line-height:1.9}
+@media (orientation:portrait){#portrait{display:flex}}
+@media (orientation:landscape){#portrait{display:none}}
+#pause .mbtn{display:block;width:100%;margin:8px 0;font-size:17px;}
+
+@media (max-height:480px){.kk{padding:.32em 0;font-size:17px}#kpDisp{font-size:24px;margin-bottom:6px}#keypad .box{padding:10px 16px}#kpGrid{gap:5px}#kpSub{margin-bottom:4px;font-size:12px}#kpTitle{font-size:15px}#keypad .row{margin-top:8px}}
+@media (max-height:480px){
+#title{gap:6px}#title h1{font-size:clamp(38px,15vh,72px)}#title .ep{margin-bottom:6px;font-size:14px}
+.mbtn{min-width:170px;padding:.4em 1.2em;font-size:16px}
+#title .warn{position:static;margin-top:4px;font-size:11px;max-width:86vw;line-height:1.5}
+#settings .box,#pause .box{padding:8px 16px;max-height:92vh}
+#settings h3,#pause h3{margin:2px 0 4px}
+.setting-line{margin:5px 0;padding:3px 0}
+#pause .mbtn{margin:4px 0;font-size:15px;padding:.35em 1em}
+#settings .row{margin-top:6px}
+}
+/* پایان */
+#end{flex-direction:column;align-items:center;justify-content:center;background:#000;z-index:25;text-align:center;}
+#endText{width:min(640px,88vw);}
+.ln{margin:.35em 0;font-size:clamp(16px,2.8vw,22px);line-height:1.8;animation:lnin .5s;}
+.ln.err{color:#e0e0d0;font-family:monospace,Tahoma;animation:lnin .5s,tg 1.2s infinite steps(1);}
+.ln.reg{color:#cfc9b0;border-right:2px solid rgba(217,212,195,.3);padding-right:12px;text-align:right;}
+.ln.red{color:#d62a32;font-weight:700;text-shadow:0 0 14px rgba(163,21,28,.8);}
+.ln.big{font-size:clamp(28px,6vw,52px);font-weight:900;color:#e9e4d0;margin-top:1em;}
+.ln.sub2{color:var(--ash);}
+@keyframes lnin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+#endBtns{display:none;margin-top:26px;}#endBtns.on{display:block;}
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<div id="sub"></div><div id="toast"></div><div id="cnt"></div>
+<div id="hud">
+  <button class="mb" id="bPause" aria-label="توقف">II</button>
+  <button class="mb" id="bNote" aria-label="دفتر">دفتر</button>
+  <button class="cb" id="bL" aria-label="چپ">◀</button>
+  <button class="cb" id="bR" aria-label="راست">▶</button>
+  <button class="cb" id="bRun">دویدن</button>
+  <button class="cb" id="bBack" aria-label="برگرد">↺</button>
+  <button class="cb" id="bAct"><span id="actLbl"></span></button>
+  <div id="prog"><div id="progBar"></div></div>
+</div>
+<div id="card"></div>
+<div id="title" class="panel">
+  <h1>نفر سیزدهم</h1>
+  <div class="ep">اپیزود اول: شمارش</div>
+  <button class="mbtn" id="btnStart">شروع بازی</button>
+  <button class="mbtn" id="btnCont">ادامه</button>
+  <button class="mbtn" id="btnSettingsTitle">تنظیمات</button>
+  <div class="warn">با هدفون بازی کن. سمت راست برای جلو، سمت چپ برای عقب؛ دوبار لمس و نگه‌داشتن برای دویدن. وسط صفحه را برای تعامل لمس کن.</div>
+</div>
+<div id="note" class="panel"><div class="box"><div id="noteBody"></div>
+  <div class="row"><button class="sbtn" id="btnHint">راهنمایی</button><button class="sbtn" id="btnNoteClose">بستن</button></div></div></div>
+<div id="keypad" class="panel"><div class="box"><div id="kpTitle"></div><div id="kpSub"></div><div id="kpDisp"></div><div id="kpGrid"></div>
+  <div class="row"><button class="sbtn" id="btnKpClose">بستن</button></div></div></div>
+<div id="pause" class="panel"><div class="box"><h3>توقف</h3>
+  <button class="mbtn" id="btnResume">ادامه</button>
+  <button class="mbtn" id="btnRestart">شروع مجدد</button>
+  <button class="mbtn" id="btnFull">تمام‌صفحه</button>
+  <button class="mbtn" id="btnSound">صدا: روشن</button>
+  <button class="mbtn" id="btnSettingsPause">تنظیمات پیشرفته</button>
+  <button class="mbtn" id="btnVib">لرزش: روشن</button>
+  <button class="mbtn" id="btnMarks">نشانگر اشیا: روشن</button>
+  <button class="mbtn" id="btnMenu">منوی اصلی</button></div></div>
+<div id="settings" class="panel"><div class="box"><h3>تنظیمات بازی</h3>
+  <div class="setting-line"><label for="volume">میزان صدا</label><input id="volume" type="range" min="0" max="100" value="80" aria-label="میزان صدای بازی"></div>
+  <div class="setting-line"><label>کیفیت تصویر</label><div class="setting-actions"><button class="sbtn" id="qLow">اقتصادی</button><button class="sbtn" id="qMed">متعادل</button><button class="sbtn" id="qHigh">بالا</button></div></div>
+  <div class="setting-line"><span>لرزش گوشی</span><button class="sbtn" id="btnVibSettings">روشن</button></div>
+  <div class="setting-line"><span>نشانگر اشیا</span><button class="sbtn" id="btnMarksSettings">روشن</button></div>
+  <div class="row"><button class="mbtn" id="btnSettingsBack">بازگشت</button></div></div></div>
+<div id="portrait">برای تجربه‌ی درست بازی، گوشی را به حالت افقی بچرخانید.<br>↻</div>
+<div id="end" class="panel"><div id="endText"></div><div id="endBtns"><button class="mbtn" id="btnAgain">بازگشت به منو</button></div></div>
+<script>
+'use strict';
+/* =====================================================
+   نفر سیزدهم — اپیزود ۱: شمارش
+   ===================================================== */
+const H=540,BASE=430,FEET=474;
+let S=1,VW=960;
+const $=id=>document.getElementById(id);
+const clamp=(v,a,b)=>v<a?a:v>b?b:v;
+const lerp=(a,b,t)=>a+(b-a)*t;
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const fa=n=>String(n).replace(/[0-9]/g,d=>'۰۱۲۳۴۵۶۷۸۹'[+d]);
+function rng(seed){let a=seed>>>0;return()=>{a=(a+0x6D2B79F5)>>>0;let t=a;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296;};}
+
+const NAMES=['امیر','بهرام','پویا','جواد','حسین','رضا','نیما','سعید','شاهین','کیان','مهدی','یاسین'];
+
+const G={state:'title',scene:'courtyard',items:{},flags:{},notes:[],counts:{},time:0,
+  lock:false,modal:false,paused:false,
+  settings:{vibrate:true,mute:false,marks:true,volume:80,quality:'high'}};
+const P={x:300,vx:0,dir:1,walk:0,target:null,run:false,step:0,unlock:null};
+const cam={x:0};
+const FX={shake:0,flash:0,fade:0,fadeDir:0,fadeCb:null,flick:0,off:0,blk:0,scare:null,echo:null,tension:0,glitch:0};
+let ambientScareT=22,autoSaveT=0;
+
+/* ---------- تایمر ---------- */
+const Timers=[];
+function later(s,fn,tag){Timers.push({t:s,fn,tag});}
+function cancel(tag){for(let i=Timers.length-1;i>=0;i--)if(Timers[i].tag===tag)Timers.splice(i,1);}
+function tickTimers(dt){
+  for(let i=0;i<Timers.length;i++){
+    const o=Timers[i];o.t-=dt;
+    if(o.t<=0){Timers.splice(i,1);i--;try{o.fn();}catch(e){console.error(e);}}
+  }
+}
+function seq(list){let t=0;list.forEach(([d,fn])=>{t+=d;later(t,fn);});}
+
+/* ---------- ذخیره ---------- */
+const SAVE='n13_ep1_v1';
+function save(){try{localStorage.setItem(SAVE,JSON.stringify({scene:G.scene,items:G.items,flags:G.flags,notes:G.notes,counts:G.counts,x:P.x,dir:P.dir,version:3}));}catch(e){}}
+function loadSave(){try{return JSON.parse(localStorage.getItem(SAVE)||'null');}catch(e){return null;}}
+function wipeSave(){try{localStorage.removeItem(SAVE);}catch(e){}}
+function saveSettings(){try{localStorage.setItem('n13_settings_v1',JSON.stringify(G.settings));}catch(e){}}
+function loadSettings(){try{const v=JSON.parse(localStorage.getItem('n13_settings_v1')||'null');if(v&&typeof v==='object'){G.settings={...G.settings,...v};}}catch(e){}}
+function vib(p){try{if(G.settings.vibrate&&navigator.vibrate)navigator.vibrate(p);}catch(e){}}
+
+/* ---------- متن‌ها و رابط ---------- */
+let subT=0;
+function say(t,d){const e=$('sub');e.textContent=t;e.className='on';subT=d||Math.max(2.6,t.length*0.075);}
+function updSub(dt){if(subT>0){subT-=dt;if(subT<=0)$('sub').className='';}}
+function toast(t){const e=$('toast');e.textContent=t;e.className='on';cancel('toast');later(2.8,()=>{e.className='';},'toast');}
+
+const ITEMS={
+  key_office:{n:'کلید دفتر مدیر',d:'کلیدی برنجی؛ برچسبش: «دفتر».'},
+  key_dorm:{n:'کلید خوابگاه',d:'کلید سنگین با زنجیر؛ برچسب: «خوابگاه».'},
+  key_base:{n:'کلید زیرزمین',d:'کلیدی زنگ‌زده. هنوز گرم است.'}
+};
+const NOTES={
+  board:'اطلاعیه‌ی راهرو: «شمارش شبانه ساعت ۹. غیبت ممنوع.» و زیرش: «سیزدهمی را نشمار.»',
+  tally:'روی تخته‌ی کلاس: «۱۳ بهمن ۱۳۷۱ — امشب هم می‌شمارمتان.»',
+  desks:'در کلاس دوازده میز بود. شمردم. بعد یک میز دیگر ظاهر شد.',
+  register:'دفتر حضور و غیاب: دوازده اسم. کنار «نیما»: «اولین غایب — تخت ۷». خط سیزدهم خالی است، ولی جوهرش تازه است.',
+  calendar:'تقویم دفتر: بهمن ۱۳۷۱. روز سیزدهم با قرمز دایره شده.',
+  safe:'روی گاوصندوق: «سالِ آخرین شمارش».',
+  paper:'کاغذ داخل گاوصندوق: «اگر شمردی و یکی اضافه بود، به او نگو که شمرده‌ای.»',
+  nima:'زیر بالش نیما: کلیدِ زیرزمین.',
+  base:'در انتهای زیرزمین نوشته: «۱۳». قفلِ عددی دارد.',
+  tallies:'روی دیوار زیرزمین دوازده ستون خط‌شمارش بود. بعد سیزدهمی پدید آمد: ۱۳.'
+};
+function addNote(id){
+  if(G.notes.includes(id))return;
+  G.notes.push(id);toast('یادداشت جدید در دفتر');vib(30);save();
+}
+function giveItem(id){
+  G.items[id]=1;toast('برداشتی: '+ITEMS[id].n);vib(40);save();
+}
+
+function hint(){
+  const f=G.flags,i=G.items;
+  if(!f.inHall)return 'به سمت راست برو و وارد ساختمان شو.';
+  if(!f.deskDone&&!i.key_office)return 'کلاس را بگرد. میزها را یکی‌یکی بشمار؛ روی هر میز یک‌بار لمس کن.';
+  if(!f.regRead)return 'کلید دفتر را داری. درِ دفتر مدیر را باز کن و دفتر حضور و غیاب را بخوان.';
+  if(!i.key_dorm)return 'گاوصندوق دفتر کد چهاررقمی می‌خواهد: «سالِ آخرین شمارش». تاریخ را روی تخته یا تقویم ببین.';
+  if(!i.key_base)return 'با کلیدِ خوابگاه وارد شو. دفتر گفته نیما اولین غایب بود؛ تخت شماره‌ی ۷. حواست به عقب باشد.';
+  if(!f.inBase)return 'بدو! درِ زیرزمین آخر راهرو است.';
+  if(!f.tallyDone)return 'خط‌شمارش‌های دیوار را یکی‌یکی بشمار.';
+  if(!f.doorOpen)return 'قفل درِ آخر، شماره‌ی کل را می‌خواهد.';
+  return 'وارد اتاق شو.';
+}
+
+function deviceInfo(){
+  const out={name:'',battery:null};
+  const ua=navigator.userAgent||'';
+  const m=ua.match(/Android[^;]*;\s*([^;)]+?)\s*(?:Build\/|\))/);
+  if(m&&m[1]&&m[1].length>1&&!/^(K|wv|Linux|Mobile)$/i.test(m[1]))out.name=m[1];
+  return out;
+}
+
+/* =====================================================
+   موتور صدا — همه‌ی صداها با کد ساخته می‌شوند
+   ===================================================== */
+const Snd=(()=>{
+  let ac=null,master,rev,nbuf,amb={},muted=false,hbT=0,dripT=3,creakT=8,duckT=0,radio=null;
+  let kind='out',tens=0;
+
+  function init(){
+    muted=!!G.settings.mute;
+    if(ac){if(ac.state==='suspended')ac.resume();return;}
+    const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;
+    try{
+      ac=new AC();
+      master=ac.createGain();master.gain.value=muted?0:(G.settings.volume/100)*0.9;
+      const comp=ac.createDynamicsCompressor();comp.threshold.value=-12;comp.ratio.value=5;
+      master.connect(comp);comp.connect(ac.destination);
+      nbuf=ac.createBuffer(1,ac.sampleRate*3,ac.sampleRate);
+      const d=nbuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+      const len=Math.floor(ac.sampleRate*2.4),ir=ac.createBuffer(2,len,ac.sampleRate);
+      for(let c=0;c<2;c++){const dd=ir.getChannelData(c);for(let i=0;i<len;i++)dd[i]=(Math.random()*2-1)*Math.pow(1-i/len,3);}
+      const conv=ac.createConvolver();conv.buffer=ir;const wg=ac.createGain();wg.gain.value=0.5;conv.connect(wg);wg.connect(master);rev=conv;
+      buildAmb();
+    }catch(e){ac=null;}
+  }
+  function route(n,send){
+    n.connect(master);
+    if(send>0&&rev){const g=ac.createGain();g.gain.value=send;n.connect(g);g.connect(rev);}
+  }
+  function noise(dur,type,f0,f1,vol,send,q,att,pan){
+    if(!ac)return;
+    const t=ac.currentTime;att=att||0.005;q=q||1;
+    const s=ac.createBufferSource();s.buffer=nbuf;s.loop=true;
+    const f=ac.createBiquadFilter();f.type=type;f.Q.value=q;
+    f.frequency.setValueAtTime(f0,t);f.frequency.exponentialRampToValueAtTime(Math.max(30,f1),t+dur);
+    const g=ac.createGain();g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(Math.max(0.0002,vol),t+att);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    s.connect(f);f.connect(g);let o=g;
+    if(pan&&ac.createStereoPanner){const p=ac.createStereoPanner();p.pan.value=pan;g.connect(p);o=p;}
+    route(o,send||0);s.start(t,Math.random()*2);s.stop(t+dur+0.05);
+  }
+  function tone(f0,dur,type,vol,send,f1,att,pan){
+    if(!ac)return;
+    const t=ac.currentTime;att=att||0.005;
+    const o=ac.createOscillator();o.type=type;o.frequency.setValueAtTime(f0,t);
+    if(f1)o.frequency.exponentialRampToValueAtTime(f1,t+dur);
+    const g=ac.createGain();g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(Math.max(0.0002,vol),t+att);
+    g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(g);let out=g;
+    if(pan&&ac.createStereoPanner){const p=ac.createStereoPanner();p.pan.value=pan;g.connect(p);out=p;}
+    route(out,send||0);o.start(t);o.stop(t+dur+0.05);
+  }
+  function loopNoise(type,freq,q,vol){
+    const s=ac.createBufferSource();s.buffer=nbuf;s.loop=true;
+    const f=ac.createBiquadFilter();f.type=type;f.frequency.value=freq;f.Q.value=q;
+    const g=ac.createGain();g.gain.value=vol;s.connect(f);f.connect(g);g.connect(master);s.start();
+    return{s,f,g};
+  }
+  function osc(type,freq,vol,lp){
+    const o=ac.createOscillator();o.type=type;o.frequency.value=freq;
+    const g=ac.createGain();g.gain.value=vol;
+    if(lp){const f=ac.createBiquadFilter();f.type='lowpass';f.frequency.value=lp;o.connect(f);f.connect(g);}else o.connect(g);
+    g.connect(master);o.start();return{o,g};
+  }
+  function buildAmb(){
+    amb.wind=loopNoise('bandpass',450,0.8,0);
+    const l1=ac.createOscillator();l1.frequency.value=0.11;const lg=ac.createGain();lg.gain.value=260;l1.connect(lg);lg.connect(amb.wind.f.frequency);l1.start();
+    const l2=ac.createOscillator();l2.frequency.value=0.17;const lg2=ac.createGain();lg2.gain.value=0.025;l2.connect(lg2);lg2.connect(amb.wind.g.gain);l2.start();
+    amb.d1=osc('sawtooth',47,0,150);amb.d2=osc('sawtooth',47.7,0,150);
+    amb.hum=osc('sine',100,0);amb.hum2=osc('sine',150,0);
+    amb.tin=osc('sine',3150,0);
+    amb.wail1=osc('sine',311,0);amb.wail2=osc('sine',329,0);
+    setKind(kind);
+  }
+  function setKind(k){
+    kind=k;if(!ac)return;const t=ac.currentTime;
+    const set=(n,v)=>n.g.gain.setTargetAtTime(v,t,0.8);
+    if(k==='out'){set(amb.wind,0.17);set(amb.d1,0.035);set(amb.d2,0.035);set(amb.hum,0);set(amb.hum2,0);}
+    else if(k==='in'){set(amb.wind,0.04);set(amb.d1,0.05);set(amb.d2,0.05);set(amb.hum,0.012);set(amb.hum2,0.006);}
+    else{set(amb.wind,0);set(amb.d1,0.08);set(amb.d2,0.08);set(amb.hum,0.014);set(amb.hum2,0.008);}
+  }
+  function setTension(v){
+    tens=v;if(!ac)return;const t=ac.currentTime;
+    amb.tin.g.gain.setTargetAtTime(0.004*v,t,0.3);
+    amb.wail1.g.gain.setTargetAtTime(0.02*v,t,0.5);amb.wail2.g.gain.setTargetAtTime(0.02*v,t,0.5);
+  }
+  function duck(sec){
+    if(!ac)return;const t=ac.currentTime;
+    master.gain.cancelScheduledValues(t);master.gain.setTargetAtTime(0.0,t,0.02);
+    duckT=sec;
+  }
+  function unduck(){
+    if(!ac)return;const t=ac.currentTime;master.gain.cancelScheduledValues(t);
+    master.gain.setTargetAtTime(muted?0:(G.settings.volume/100)*0.9,t,0.01);duckT=0;
+  }
+  function update(dt){
+    if(!ac)return;
+    if(duckT>0){duckT-=dt;if(duckT<=0)unduck();return;}
+    if(tens>0.25){hbT-=dt;if(hbT<=0){hbT=lerp(1.1,0.42,tens);heart();}}
+    if(kind!=='out'){
+      dripT-=dt;if(dripT<=0){dripT=rnd(kind==='base'?1.6:4,kind==='base'?5:11);drip();}
+      creakT-=dt;if(creakT<=0){creakT=rnd(9,22);creak(0.5);}
+    }
+  }
+  function heart(){tone(58,0.14,'sine',0.75,0,38,0.004);setTimeout(()=>tone(52,0.18,'sine',0.5,0,34,0.004),170);}
+  function drip(){const f=rnd(900,1700);tone(f,0.09,'sine',0.07,0.7,f*0.6,0.002,rnd(-.6,.6));}
+  function creak(v){
+    if(!ac)return;const t=ac.currentTime,d=rnd(0.7,1.3);
+    const o=ac.createOscillator();o.type='sawtooth';o.frequency.setValueAtTime(rnd(90,140),t);o.frequency.linearRampToValueAtTime(rnd(160,260),t+d);
+    const f=ac.createBiquadFilter();f.type='bandpass';f.frequency.value=rnd(500,900);f.Q.value=9;
+    const g=ac.createGain();g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.05*(v||1),t+0.15);g.gain.exponentialRampToValueAtTime(0.0001,t+d);
+    o.connect(f);f.connect(g);route(g,0.5);o.start(t);o.stop(t+d+0.05);
+  }
+  function step(surf,run){
+    const v=run?1.4:1;
+    if(surf==='snow'){noise(0.16,'bandpass',900,420,0.22*v,0.1,1.2,0.006);noise(0.09,'highpass',3500,2500,0.05,0,1,0.002);}
+    else if(surf==='wood'){noise(0.1,'lowpass',420,160,0.5*v,0.35,1,0.003);tone(95,0.09,'sine',0.35*v,0.2,60,0.002);if(Math.random()<0.12)creak(0.4);}
+    else{noise(0.07,'bandpass',1500,700,0.28*v,0.5,2,0.002);tone(110,0.07,'sine',0.25*v,0.4,70,0.002);}
+  }
+  function door(){creak(1.4);noise(0.6,'lowpass',700,200,0.12,0.5,1,0.08);}
+  function slam(){noise(0.9,'lowpass',1600,70,1,0.8,0.8,0.002);tone(62,0.7,'sine',1,0.3,26,0.002);}
+  function knock(n){for(let i=0;i<(n||2);i++)setTimeout(()=>{tone(170,0.12,'triangle',0.8,0.5,80,0.002);noise(0.1,'lowpass',900,200,0.5,0.5,1,0.002);},i*260);}
+  function paper(){noise(0.25,'highpass',2500,6000,0.12,0.1,0.8,0.03);}
+  function click(){tone(1400,0.04,'square',0.04,0,900,0.001);}
+  function tick(n){tone(330+n*32,0.16,'triangle',0.18,0.5,300+n*30,0.002);noise(0.05,'highpass',3000,5000,0.05,0,1,0.001);}
+  function unlock(){tone(900,0.05,'square',0.08,0.3,700,0.001);setTimeout(()=>tone(520,0.12,'square',0.08,0.3,400,0.001),90);setTimeout(()=>noise(0.2,'bandpass',2000,800,0.2,0.4,3,0.002),170);}
+  function buzz(){tone(90,0.35,'sawtooth',0.12,0.1,70,0.01);}
+  function beep(){tone(1000,0.06,'sine',0.05,0,1000,0.001);}
+  function whisper(n,pan){
+    for(let i=0;i<(n||4);i++)setTimeout(()=>noise(rnd(0.1,0.25),'bandpass',rnd(1400,3200),rnd(1500,3000),0.13,0.7,5,0.03,pan||rnd(-.7,.7)),i*rnd(120,220));
+  }
+  function stinger(p){
+    p=p||1;if(!ac)return;unduck();
+    noise(1.1,'lowpass',9000,300,0.9*p,0.5,0.7,0.002);
+    [233,247,311,330,466].forEach((f,i)=>tone(f*(1+i*0.004),1,'sawtooth',0.16*p,0.4,f*0.5,0.002));
+    tone(1200,0.6,'sawtooth',0.1*p,0.3,2600,0.01);
+    tone(40,1.3,'sine',0.9*p,0,26,0.002);
+  }
+  function scream(p){
+    p=p||1;if(!ac)return;unduck();
+    const t=ac.currentTime,d=1.3;
+    const o=ac.createOscillator();o.type='sawtooth';o.frequency.setValueAtTime(520,t);o.frequency.exponentialRampToValueAtTime(1500,t+0.35);o.frequency.exponentialRampToValueAtTime(900,t+d);
+    const v=ac.createOscillator();v.frequency.value=11;const vg=ac.createGain();vg.gain.value=60;v.connect(vg);vg.connect(o.frequency);v.start(t);v.stop(t+d);
+    const f1=ac.createBiquadFilter();f1.type='bandpass';f1.frequency.value=950;f1.Q.value=3;
+    const f2=ac.createBiquadFilter();f2.type='bandpass';f2.frequency.value=2600;f2.Q.value=4;
+    const g=ac.createGain();g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.45*p,t+0.04);g.gain.exponentialRampToValueAtTime(0.0001,t+d);
+    o.connect(f1);o.connect(f2);f1.connect(g);f2.connect(g);route(g,0.35);o.start(t);o.stop(t+d+0.05);
+    noise(d,'bandpass',1800,2600,0.5*p,0.4,1.2,0.01);
+  }
+  function thump(n){for(let i=0;i<n;i++)setTimeout(()=>{tone(70,0.35,'sine',1,0.6,32,0.002);noise(0.3,'lowpass',500,80,0.5,0.6,1,0.002);},i*420);}
+  function radioOn(v){
+    if(!ac)return;
+    if(!radio){radio=loopNoise('bandpass',1800,2,0);}
+    radio.g.gain.setTargetAtTime(v,ac.currentTime,0.05);
+    if(v>0)radio.f.frequency.setTargetAtTime(rnd(800,3000),ac.currentTime,0.1);
+  }
+  function setMuted(m){muted=m;if(ac)master.gain.setTargetAtTime(m?0:(G.settings.volume/100)*0.9,ac.currentTime,0.05);}
+  function setVolume(v){G.settings.volume=clamp(+v||0,0,100);if(ac&&!muted)master.gain.setTargetAtTime((G.settings.volume/100)*0.9,ac.currentTime,0.05);}
+  function suspend(){if(ac&&ac.state==='running')ac.suspend();}
+  function resume(){if(ac&&ac.state==='suspended')ac.resume();}
+  return{init,setKind,setTension,duck,unduck,update,step,door,slam,knock,paper,click,tick,unlock,buzz,beep,whisper,stinger,scream,thump,creak,heart,radioOn,setMuted,setVolume,suspend,resume,get ready(){return !!ac;}};
+})();
+
+/* =====================================================
+   نقاشی با کد: بافت‌ها، شخصیت‌ها، ترسناک‌ها
+   ===================================================== */
+const Tex={};
+function mkc(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;return c;}
+function wrapDraw(x,y,r,w,h,fn){for(let a=-1;a<=1;a++)for(let b=-1;b<=1;b++){const px=x+a*w,py=y+b*h;if(px+r<0||px-r>w||py+r<0||py-r>h)continue;fn(px,py);}}
+function rr(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath();}
+function lin(g,x0,y0,x1,y1,st){const gr=g.createLinearGradient(x0,y0,x1,y1);st.forEach(s=>gr.addColorStop(s[0],s[1]));return gr;}
+function rad(g,x,y,r0,r1,st){const gr=g.createRadialGradient(x,y,r0,x,y,r1);st.forEach(s=>gr.addColorStop(s[0],s[1]));return gr;}
+function ell(g,x,y,rx,ry,col){g.fillStyle=col;g.beginPath();g.ellipse(x,y,rx,ry,0,0,6.2832);g.fill();}
+function fillPat(g,pat,x,y,w,h,a){if(!pat)return;g.save();g.globalAlpha=a;g.fillStyle=pat;g.fillRect(x,y,w,h);g.restore();}
+
+function buildTex(){
+  const R=rng(11);let c,g;
+  c=mkc(256,256);g=c.getContext('2d');
+  for(let i=0;i<70;i++){
+    const x=R()*256,y=R()*256,r=10+R()*60,dk=R()<0.7,a=dk?0.03+R()*0.09:0.015+R()*0.04,col=dk?'0,0,0':'255,255,255';
+    wrapDraw(x,y,r,256,256,(px,py)=>{g.fillStyle=rad(g,px,py,0,r,[[0,'rgba('+col+','+a+')'],[1,'rgba('+col+',0)']]);g.fillRect(px-r,py-r,r*2,r*2);});
+  }
+  for(let i=0;i<500;i++){g.fillStyle='rgba(0,0,0,'+(R()*0.12)+')';g.fillRect(R()*256,R()*256,1+R()*2,1+R()*2);}
+  Tex.stain=c;
+  c=mkc(256,256);g=c.getContext('2d');
+  for(let i=0;i<170;i++){
+    const y=R()*256,x=R()*256,l=40+R()*170;
+    g.strokeStyle='rgba('+(R()<0.55?'0,0,0':'255,225,180')+','+(0.03+R()*0.08)+')';g.lineWidth=0.6+R()*1.6;
+    g.beginPath();g.moveTo(x,y);g.lineTo(x+l,y+(R()-0.5)*3);g.stroke();
+    if(x+l>256){g.beginPath();g.moveTo(x-256,y);g.lineTo(x+l-256,y+(R()-0.5)*3);g.stroke();}
+  }
+  Tex.wood=c;
+  c=mkc(256,256);g=c.getContext('2d');
+  for(let i=0;i<1400;i++){g.fillStyle='rgba('+(R()<0.5?'0,0,0':'255,255,255')+','+(R()*0.1)+')';g.fillRect(R()*256,R()*256,1+R()*3,1+R()*3);}
+  for(let i=0;i<6;i++){let x=R()*256,y=R()*256;g.strokeStyle='rgba(0,0,0,0.25)';g.lineWidth=1;g.beginPath();g.moveTo(x,y);for(let k=0;k<14;k++){x+=(R()-0.5)*26;y+=R()*14;g.lineTo(x,y);}g.stroke();}
+  Tex.conc=c;
+  c=mkc(256,256);g=c.getContext('2d');
+  for(let i=0;i<50;i++){const x=R()*256,y=R()*256,r=8+R()*30;wrapDraw(x,y,r,256,256,(px,py)=>{g.fillStyle=rad(g,px,py,0,r,[[0,'rgba(255,255,255,0.12)'],[1,'rgba(255,255,255,0)']]);g.fillRect(px-r,py-r,r*2,r*2);});}
+  for(let i=0;i<700;i++){g.fillStyle='rgba(255,255,255,'+(R()*0.2)+')';g.fillRect(R()*256,R()*256,1+R()*2,1+R()*2);}
+  Tex.snow=c;
+  Tex.grain=[];
+  for(let k=0;k<3;k++){
+    c=mkc(128,128);g=c.getContext('2d');const id=g.createImageData(128,128);
+    for(let i=0;i<id.data.length;i+=4){const v=Math.random()*255;id.data[i]=id.data[i+1]=id.data[i+2]=v;id.data[i+3]=255;}
+    g.putImageData(id,0,0);Tex.grain.push(c);
+  }
+}
+function makePats(g){
+  Tex.pStain=g.createPattern(Tex.stain,'repeat');Tex.pWood=g.createPattern(Tex.wood,'repeat');
+  Tex.pConc=g.createPattern(Tex.conc,'repeat');Tex.pSnow=g.createPattern(Tex.snow,'repeat');
+  Tex.pGrain=Tex.grain.map(c=>g.createPattern(c,'repeat'));
+}
+
+/* ---------- بدنه‌ی مشترک فضای داخلی ---------- */
+function interior(g,x0,x1,pal,floorKind){
+  const w=x1-x0;
+  g.fillStyle=lin(g,0,0,0,80,[[0,pal.c0],[1,pal.c1]]);g.fillRect(x0,0,w,80);
+  g.fillStyle=lin(g,0,70,0,BASE,[[0,pal.w0],[1,pal.w1]]);g.fillRect(x0,70,w,BASE-70);
+  fillPat(g,Tex.pStain,x0,70,w,BASE-70,0.9);
+  g.fillStyle=pal.dado;g.fillRect(x0,300,w,BASE-300);
+  fillPat(g,Tex.pStain,x0,300,w,BASE-300,0.8);
+  g.fillStyle='rgba(0,0,0,.4)';g.fillRect(x0,298,w,3);g.fillStyle='rgba(255,255,255,.07)';g.fillRect(x0,301,w,1);
+  g.fillStyle='rgba(0,0,0,.35)';g.fillRect(x0,70,w,5);
+  g.fillStyle=pal.base;g.fillRect(x0,BASE-9,w,9);g.fillStyle='rgba(0,0,0,.4)';g.fillRect(x0,BASE-1,w,2);
+  g.fillStyle=lin(g,0,BASE,0,H,[[0,pal.f0],[1,pal.f1]]);g.fillRect(x0,BASE,w,H-BASE);
+  fillPat(g,floorKind==='conc'?Tex.pConc:Tex.pWood,x0,BASE,w,H-BASE,floorKind==='conc'?1:0.9);
+  g.strokeStyle='rgba(0,0,0,.28)';g.lineWidth=1.2;
+  const rows=[BASE,452,478,510,H];
+  for(let r=0;r<4;r++){
+    g.beginPath();g.moveTo(x0,rows[r]+0.5);g.lineTo(x1,rows[r]+0.5);g.stroke();
+    if(floorKind!=='conc'){
+      const sp=210+r*40,off=(r*97)%sp;
+      for(let xx=Math.floor((x0-off)/sp)*sp+off;xx<x1;xx+=sp){g.beginPath();g.moveTo(xx,rows[r]);g.lineTo(xx,rows[r+1]);g.stroke();}
+    }
+  }
+}
+function beam(g,x,top,w,len,skew,a){
+  g.fillStyle=lin(g,0,top,0,top+len,[[0,'rgba(150,175,230,'+a+')'],[1,'rgba(150,175,230,0)']]);
+  g.beginPath();g.moveTo(x,top);g.lineTo(x+w,top);g.lineTo(x+w+skew+w*0.3,top+len);g.lineTo(x+skew-w*0.3,top+len);g.closePath();g.fill();
+}
+function windowFrame(g,x,y,w,h,t,snow){
+  g.fillStyle='#1c1612';g.fillRect(x-8,y-8,w+16,h+16);
+  g.fillStyle=lin(g,0,y,0,y+h,[[0,'#243558'],[1,'#47598a']]);g.fillRect(x,y,w,h);
+  if(snow){g.fillStyle='rgba(255,255,255,.75)';for(let i=0;i<26;i++){const sx=x+((i*53+t*18+Math.sin(t+i)*8)%w+w)%w,sy=y+((i*37+t*40)%h);g.fillRect(sx,sy,2,2);}}
+  g.fillStyle='#17110d';g.fillRect(x+w/2-3,y,6,h);g.fillRect(x,y+h*0.45,w,6);
+  g.fillStyle='#2a211a';g.fillRect(x-14,y+h+8,w+28,8);
+  g.fillStyle='rgba(255,255,255,.1)';g.fillRect(x,y,w*0.35,h);
+}
+function doorArt(g,x,w,h,col,lab,opt){
+  opt=opt||{};const y=BASE+8-h,l=x-w/2;
+  g.fillStyle='#0f0b08';g.fillRect(l-10,y-10,w+20,h+10);
+  g.fillStyle=lin(g,l,0,l+w,0,[[0,col[0]],[0.5,col[1]],[1,col[0]]]);g.fillRect(l,y,w,h);
+  fillPat(g,Tex.pWood,l,y,w,h,0.7);
+  g.strokeStyle='rgba(0,0,0,.45)';g.lineWidth=2;
+  g.strokeRect(l+10,y+14,w-20,h*0.38);g.strokeRect(l+10,y+h*0.38+28,w-20,h*0.48);
+  if(opt.glass){g.fillStyle='rgba(120,150,190,.25)';g.fillRect(l+16,y+20,w-32,h*0.3);g.fillStyle='rgba(255,255,255,.08)';g.fillRect(l+16,y+20,(w-32)*0.4,h*0.3);}
+  g.fillStyle='#b9a36a';ell(g,l+w-14,y+h*0.55,5,5,'#b9a36a');
+  g.fillStyle='#d8cfb4';g.fillRect(x-17,y-26,34,16);g.fillStyle='#1a1410';g.font='bold 12px sans-serif';g.textAlign='center';g.fillText(lab,x,y-14);
+  if(opt.chain){g.strokeStyle='#555';g.lineWidth=3;g.beginPath();g.moveTo(l,y+h*0.5);g.lineTo(l+w,y+h*0.58);g.stroke();ell(g,x,y+h*0.55,7,9,'#7a6a40');}
+}
+
+/* ---------- بازیکن ---------- */
+function drawPlayer(g,t){
+  const x=P.x,d=P.dir,mv=clamp(Math.abs(P.vx)/285,0,1),ph=P.walk;
+  const running=In.run||!!G.flags.chase,bob=Math.abs(Math.sin(ph))*3.1*mv;
+  const stride=Math.sin(ph)*(running?0.78:0.48)*mv,armSwing=Math.sin(ph+Math.PI)*9*mv;
+  // سایه‌ی تماس با زمین و سایه‌ی نرم بدن
+  g.save();g.globalAlpha=.34;ell(g,x+5,FEET+5,35,7,'#000');g.restore();
+  g.save();g.translate(x,FEET);g.scale(d,1);g.lineCap='round';g.lineJoin='round';
+  // پاهای شلوار زمستانی با زانو و چین پارچه
+  const leg=(sx,phase,front)=>{
+    const knee=sx+Math.sin(phase)*10*mv,foot=sx+Math.sin(phase)*20*mv;
+    g.fillStyle=lin(g,sx-9,-72-bob,sx+9,-5,[[0,front?'#343b43':'#252b32'],[.48,'#171d24'],[1,'#090c10']]);
+    g.beginPath();g.moveTo(sx-8,-119-bob);g.quadraticCurveTo(sx+8,-124-bob,knee+8,-70-bob);
+    g.quadraticCurveTo(knee+10,-48,foot+7,-12);g.quadraticCurveTo(foot+5,-4,foot-8,-5);
+    g.lineTo(knee-8,-65-bob);g.quadraticCurveTo(sx-14,-96-bob,sx-8,-119-bob);g.closePath();g.fill();
+    g.strokeStyle='rgba(183,194,202,.16)';g.lineWidth=1.4;g.beginPath();g.moveTo(sx-3,-107-bob);g.lineTo(knee-1,-77-bob);g.lineTo(foot-1,-20);g.stroke();
+    g.strokeStyle='rgba(0,0,0,.58)';g.lineWidth=2;g.beginPath();g.moveTo(knee-7,-65-bob);g.quadraticCurveTo(knee,-61-bob,knee+8,-64-bob);g.stroke();
+    // بوت چرمی
+    g.fillStyle='#090b0e';rr(g,foot-11,-15,29,13,4);g.fill();
+    g.fillStyle=lin(g,foot-10,-14,foot+18,-4,[[0,'#394047'],[1,'#11161b']]);
+    g.beginPath();g.moveTo(foot-10,-14);g.lineTo(foot+11,-14);g.lineTo(foot+18,-7);g.lineTo(foot+14,-3);g.lineTo(foot-9,-4);g.closePath();g.fill();
+    g.strokeStyle='rgba(220,220,210,.32)';g.lineWidth=1;g.beginPath();g.moveTo(foot-7,-3);g.lineTo(foot+15,-3);g.moveTo(foot-2,-11);g.lineTo(foot+7,-9);g.stroke();
+    g.strokeStyle='rgba(5,6,8,.9)';g.lineWidth=1.4;for(let k=0;k<3;k++){g.beginPath();g.moveTo(foot-1+k*4,-12);g.lineTo(foot+2+k*4,-8);g.stroke();}
+  };
+  leg(-7,stride+Math.PI,false);leg(7,stride,true);
+  // کوله‌ی سنگین با بندها، سگک و جیب
+  g.fillStyle=lin(g,-34,-139-bob,-13,-66,[[0,'#414b53'],[.4,'#202a31'],[1,'#080d12']]);
+  rr(g,-32,-137-bob,22,69,7);g.fill();
+  g.fillStyle='#111920';rr(g,-31,-94-bob,20,24,4);g.fill();
+  g.strokeStyle='rgba(190,198,199,.28)';g.lineWidth=1.3;g.beginPath();g.moveTo(-28,-127-bob);g.lineTo(-28,-74);g.moveTo(-15,-130-bob);g.lineTo(-14,-74);g.stroke();
+  g.fillStyle='#8b7956';rr(g,-23,-90-bob,5,3,1);g.fill();
+  // تنه و کاپشن چندلایه
+  g.fillStyle=lin(g,-20,-143-bob,20,-53,[[0,'#596573'],[.18,'#3c4855'],[.52,'#25313d'],[.82,'#17212a'],[1,'#0c1218']]);
+  g.beginPath();g.moveTo(-14,-140-bob);g.quadraticCurveTo(-2,-150-bob,13,-140-bob);
+  g.quadraticCurveTo(24,-123-bob,20,-95-bob);g.lineTo(17,-59-bob);
+  g.quadraticCurveTo(0,-51-bob,-18,-59-bob);g.lineTo(-21,-98-bob);g.quadraticCurveTo(-24,-124-bob,-14,-140-bob);g.closePath();g.fill();
+  // چین‌های حجمی و درزها
+  g.strokeStyle='rgba(194,205,214,.23)';g.lineWidth=1.25;g.beginPath();
+  g.moveTo(-15,-132-bob);g.quadraticCurveTo(-8,-116-bob,-12,-99-bob);g.moveTo(13,-129-bob);g.quadraticCurveTo(7,-112-bob,14,-91-bob);
+  g.moveTo(-16,-79-bob);g.quadraticCurveTo(-7,-73-bob,-4,-65-bob);g.moveTo(15,-76-bob);g.lineTo(7,-68-bob);g.stroke();
+  g.strokeStyle='rgba(0,0,0,.68)';g.lineWidth=2;g.beginPath();g.moveTo(1,-139-bob);g.lineTo(2,-58-bob);g.stroke();
+  g.fillStyle='#9d8b68';g.fillRect(3,-112-bob,2,33);g.fillStyle='#111820';rr(g,-16,-103-bob,10,13,2);g.fill();
+  g.strokeStyle='rgba(0,0,0,.65)';g.lineWidth=1;g.strokeRect(-14,-101-bob,6,9);
+  // یقه‌ی بلند و شال با بافت
+  g.fillStyle='#4a2024';g.beginPath();g.moveTo(-14,-142-bob);g.quadraticCurveTo(0,-153-bob,14,-140-bob);g.lineTo(11,-126-bob);g.quadraticCurveTo(0,-133-bob,-12,-126-bob);g.closePath();g.fill();
+  g.strokeStyle='rgba(222,190,164,.22)';g.lineWidth=1;g.beginPath();g.moveTo(-8,-139-bob);g.lineTo(7,-132-bob);g.moveTo(-9,-135-bob);g.lineTo(6,-128-bob);g.stroke();
+  // بازوی نزدیک و چین آرنج
+  g.strokeStyle='#202b36';g.lineWidth=11;g.beginPath();g.moveTo(13,-128-bob);g.quadraticCurveTo(24,-116-bob,24+armSwing,-101-bob);g.stroke();
+  g.strokeStyle='rgba(194,205,214,.26)';g.lineWidth=1.4;g.beginPath();g.moveTo(17,-122-bob);g.lineTo(24+armSwing,-105-bob);g.stroke();
+  g.fillStyle='#111820';ell(g,25+armSwing,-98-bob,6,7,'#111820');
+  // سر، مو، گوش و نیم‌رخ
+  g.fillStyle='#80695b';g.beginPath();g.ellipse(1,-155-bob,11.5,14.5,.08,0,Math.PI*2);g.fill();
+  g.fillStyle=lin(g,-9,-168-bob,12,-143-bob,[[0,'#d0ad96'],[.4,'#a7836e'],[.8,'#755b4d'],[1,'#4b3b34']]);
+  g.beginPath();g.moveTo(-8,-160-bob);g.quadraticCurveTo(-9,-173-bob,1,-173-bob);g.quadraticCurveTo(13,-171-bob,13,-158-bob);
+  g.lineTo(10,-151-bob);g.lineTo(5,-145-bob);g.lineTo(-5,-147-bob);g.closePath();g.fill();
+  g.fillStyle='#17191d';g.beginPath();g.moveTo(-10,-160-bob);g.quadraticCurveTo(-12,-176-bob,2,-177-bob);g.quadraticCurveTo(16,-176-bob,16,-160-bob);
+  g.lineTo(9,-164-bob);g.lineTo(1,-162-bob);g.lineTo(-5,-157-bob);g.closePath();g.fill();
+  g.strokeStyle='rgba(115,122,130,.28)';g.lineWidth=1;g.beginPath();g.moveTo(-7,-168-bob);g.quadraticCurveTo(0,-176-bob,9,-169-bob);g.stroke();
+  g.fillStyle='#6b5146';ell(g,-7,-153-bob,2.2,3,'#6b5146');
+  g.fillStyle='#171719';ell(g,8,-157-bob,1.3,1.5,'#171719');
+  g.strokeStyle='rgba(40,25,20,.7)';g.lineWidth=1;g.beginPath();g.moveTo(8,-150-bob);g.lineTo(4,-148-bob);g.stroke();
+  // بازوی دور و چراغ‌قوه با شیشه‌ی روشن
+  g.strokeStyle='#283542';g.lineWidth=8;g.beginPath();g.moveTo(-12,-128-bob);g.lineTo(-21,-108-bob);g.lineTo(-11,-96-bob);g.stroke();
+  g.fillStyle='#111820';ell(g,-10,-95-bob,5,6,'#111820');
+  g.save();g.translate(27,-101-bob+armSwing);g.rotate(-.04+Math.sin(t*1.3)*.018);
+  g.fillStyle='#090c10';rr(g,-3,-5,23,10,3);g.fill();g.fillStyle='#626b70';rr(g,1,-4,12,8,2);g.fill();
+  g.fillStyle='#e7dfc1';g.fillRect(18,-4,5,8);g.fillStyle='rgba(255,238,190,.72)';g.fillRect(22,-3,3,6);
+  g.strokeStyle='rgba(255,255,255,.25)';g.lineWidth=.8;g.strokeRect(2,-4,9,8);g.restore();
+  // نفس سرد و لرزش ظریف بدن
+  if(FX.tension>.3||G.scene==='courtyard'||G.scene==='basement'){
+    const bt=(t*.8)%1;g.fillStyle='rgba(220,230,255,'+(.16*(1-bt))+')';ell(g,14+bt*21,-158-bob-bt*8,3+bt*6,2+bt*3,'rgba(220,230,255,'+(.16*(1-bt))+')');
+  }
+  g.restore();
+}
+/* ---------- سیزدهمی ---------- */
+function drawFigure(g,x,t,mode,facing){
+  const y=FEET-2,st=Math.floor(t*(mode==='run'?14:7)),R=rng(st*7+13);
+  const jit=mode==='back'?0:(R()-.5)*3;g.save();g.translate(x+jit,y);g.scale(facing||1,1);
+  ell(g,0,4,37,8,'rgba(0,0,0,.58)');
+  const stride=mode==='run'?Math.sin(st*1.7)*30:(R()-.5)*7,tilt=mode==='back'?.04:(R()<.5?-1:1)*(.13+R()*.18),height=mode==='run'?194:222;
+  // پاهای نامتقارن زیر پالتوی بلند
+  g.strokeStyle='#08090b';g.lineWidth=13;g.beginPath();g.moveTo(-7,-height*.39);g.quadraticCurveTo(-12+stride*.35,-height*.2,-10+stride,0);g.stroke();
+  g.strokeStyle='#191a1c';g.lineWidth=8;g.beginPath();g.moveTo(7,-height*.4);g.quadraticCurveTo(10-stride*.3,-height*.2,9-stride,0);g.stroke();
+  // پالتوی فرسوده با شانه‌های برجسته
+  g.fillStyle=lin(g,-26,-height*.82,27,-height*.12,[[0,'#292b2d'],[.32,'#17191c'],[.72,'#0d0f12'],[1,'#050608']]);
+  g.beginPath();g.moveTo(-12,-height*.82);g.quadraticCurveTo(-28,-height*.8,-29,-height*.58);
+  g.lineTo(-24,-height*.27);g.lineTo(-34,-height*.06);g.lineTo(-12,-height*.12);g.lineTo(0,-height*.2);
+  g.lineTo(13,-height*.11);g.lineTo(33,-height*.04);g.lineTo(23,-height*.3);g.lineTo(28,-height*.62);
+  g.quadraticCurveTo(25,-height*.81,12,-height*.83);g.closePath();g.fill();
+  g.strokeStyle='rgba(105,111,112,.17)';g.lineWidth=1.4;g.beginPath();g.moveTo(-19,-height*.69);g.quadraticCurveTo(-8,-height*.52,-17,-height*.31);g.moveTo(15,-height*.72);g.lineTo(10,-height*.4);g.moveTo(-8,-height*.18);g.lineTo(-13,-height*.08);g.stroke();
+  // بازوهای بیش از حد بلند
+  const ax=mode==='run'?34:22,ay=mode==='run'?-height*.43:-height*.14;
+  g.strokeStyle='#101114';g.lineWidth=13;g.beginPath();g.moveTo(-19,-height*.77);g.quadraticCurveTo(-ax,-height*.59,-ax-5,ay);g.stroke();
+  g.strokeStyle='#090a0c';g.lineWidth=10;g.beginPath();g.moveTo(18,-height*.77);g.quadraticCurveTo(ax+5,-height*.55,ax+(mode==='run'?35:8),ay+4);g.stroke();
+  g.strokeStyle='#9b9d91';g.lineWidth=1.7;
+  for(const side of [-1,1]){const hx=side*(ax+(mode==='run'&&side>0?35:side<0&&mode==='run'?5:8));for(let f=0;f<4;f++){g.beginPath();g.moveTo(hx,ay+3);g.lineTo(hx+(f-1.5)*4,ay+23+R()*9);g.stroke();}}
+  // گردن و سر متمایل
+  g.strokeStyle='#151619';g.lineWidth=9;g.beginPath();g.moveTo(Math.sin(tilt)*7,-height*.82);g.lineTo(Math.sin(tilt)*15,-height*.94);g.stroke();
+  g.save();g.translate(Math.sin(tilt)*17,-height*.99);g.rotate(tilt*1.5);
+  if(mode==='back'){
+    g.fillStyle='#141619';g.beginPath();g.ellipse(0,0,14,18,0,0,6.2832);g.fill();
+    g.strokeStyle='#050607';g.lineWidth=2;for(let k=0;k<12;k++){g.beginPath();g.moveTo(-12+k*2.2,-13);g.quadraticCurveTo(-17+k*3,2,-13+k*3,28+R()*10);g.stroke();}
+  }else{
+    g.fillStyle=rad(g,0,0,2,24,[[0,'#d9d9ca'],[.55,'#a4a69a'],[1,'#55584f']]);g.beginPath();g.ellipse(0,0,14,19,0,0,6.2832);g.fill();
+    g.fillStyle='#050506';g.beginPath();g.ellipse(-5,-4,3.8,6,.1,0,6.2832);g.ellipse(5,-4,3.8,6,-.1,0,6.2832);g.fill();
+    g.fillStyle='#d9d9c8';ell(g,-5,-4,1.1,1.6,'#d9d9c8');ell(g,5,-4,1.1,1.6,'#d9d9c8');
+    g.fillStyle='#030303';g.beginPath();g.ellipse(0,9,3,7+R()*3,0,0,6.2832);g.fill();
+    g.strokeStyle='#08090a';g.lineWidth=1.6;for(let k=0;k<10;k++){g.beginPath();g.moveTo(-12+k*2.7,-17);g.lineTo(-15+k*3.2,25+R()*13);g.stroke();}
+  }
+  g.restore();g.restore();
+}
+/* ---------- صورت ترسناک تمام‌صفحه ---------- */
+function drawScare(g,w,h,u,kind){
+  g.save();
+  g.fillStyle='#000';g.fillRect(0,0,w,h);
+  const zoom=0.75+Math.min(1,u*3)*0.55+u*0.12,cx=w/2+Math.sin(u*80)*10,cy=h*0.52+Math.cos(u*70)*8;
+  const R=rng(Math.floor(u*30)+3);
+  const fh=h*0.9*zoom,fw=fh*0.66;
+  g.translate(cx,cy);
+  // موهای آویزان
+  g.strokeStyle='#050505';g.lineWidth=3;
+  for(let k=0;k<44;k++){const a=-fw*0.55+k*(fw*1.1/44);g.beginPath();g.moveTo(a,-fh*0.5);g.quadraticCurveTo(a+(R()-0.5)*40,0,a+(R()-0.5)*90,fh*0.55+R()*60);g.stroke();}
+  // صورت
+  g.fillStyle=rad(g,0,-fh*0.08,fh*0.05,fh*0.6,[[0,'#f0f0e4'],[0.6,'#a7a99a'],[1,'#40423c']]);
+  g.beginPath();g.ellipse(0,0,fw*0.5,fh*0.5,0,0,6.2832);g.fill();
+  // ترک‌ها
+  g.strokeStyle='rgba(20,20,20,.55)';g.lineWidth=2;
+  for(let k=0;k<9;k++){let x=(R()-0.5)*fw*0.7,y=-fh*0.4;g.beginPath();g.moveTo(x,y);for(let s=0;s<6;s++){x+=(R()-0.5)*40;y+=fh*0.12;g.lineTo(x,y);}g.stroke();}
+  // چشم‌ها
+  for(let s=-1;s<=1;s+=2){
+    g.fillStyle='#000';g.beginPath();g.ellipse(s*fw*0.19,-fh*0.1,fw*0.1,fh*0.095,s*0.15,0,6.2832);g.fill();
+    g.fillStyle=kind==='catch'?'#c40d12':'#ddd';g.beginPath();g.arc(s*fw*0.19+(R()-0.5)*4,-fh*0.09,fw*0.014,0,6.2832);g.fill();
+  }
+  // دهان
+  g.fillStyle='#000';const mo=fh*(0.14+0.07*Math.abs(Math.sin(u*40)));
+  g.beginPath();g.ellipse(0,fh*0.22,fw*0.2,mo,0,0,6.2832);g.fill();
+  g.fillStyle='#bdbdae';for(let k=-4;k<=4;k++){g.beginPath();g.moveTo(k*fw*0.035-5,fh*0.22-mo*0.9);g.lineTo(k*fw*0.035,fh*0.22-mo*0.9+fh*0.04+R()*10);g.lineTo(k*fw*0.035+5,fh*0.22-mo*0.9);g.fill();}
+  g.restore();
+  if(kind==='catch'){g.fillStyle='rgba(180,0,0,'+(0.25+0.2*Math.sin(u*60))+')';g.fillRect(0,0,w,h);}
+  // نویز
+  g.fillStyle='rgba(255,255,255,.07)';for(let k=0;k<90;k++)g.fillRect(Math.random()*w,Math.random()*h,w*0.2,1+Math.random()*2);
+}
+function drawWindowFace(g,x,y,a){
+  g.save();g.globalAlpha=a;g.translate(x,y);
+  g.fillStyle=rad(g,0,0,2,46,[[0,'#eef0e6'],[1,'rgba(150,155,140,0)']]);g.beginPath();g.ellipse(0,0,26,36,0,0,6.2832);g.fill();
+  g.fillStyle='#000';g.beginPath();g.ellipse(-9,-6,5,8,0,0,6.2832);g.fill();g.beginPath();g.ellipse(9,-6,5,8,0,0,6.2832);g.fill();
+  g.beginPath();g.ellipse(0,16,5,11,0,0,6.2832);g.fill();g.restore();
+}
+
+/* =====================================================
+   صحنه‌ها: نقاشی، اشیا، نورها
+   ===================================================== */
+const SC={};
+const AN={win:0,bed:0,tally:0,desk:0,tv:0,prints:[]};
+function O(id,x,w,top,n,act,o){return Object.assign({id,x,w,top,bot:BASE+20,n,act},o||{});}
+function DR(id,x,top,n,to,spawn,o){return O(id,x,110,top,n,null,Object.assign({to,spawn},o||{}));}
+
+/* ----- اجزای مشترک ----- */
+function ridge(g,par,baseY,amp,fr,seed,col){
+  const u0=cam.x*par-40,u1=u0+VW+80;
+  g.save();g.translate(cam.x*(1-par),0);g.fillStyle=col;g.beginPath();g.moveTo(u0,baseY+260);
+  for(let u=u0;u<=u1;u+=14){const hh=amp*(0.5*Math.sin(u*fr+seed)+0.3*Math.sin(u*fr*2.3+seed*2)+0.2*Math.sin(u*fr*5.1+seed*3));g.lineTo(u,baseY-hh);}
+  g.lineTo(u1,baseY+260);g.closePath();g.fill();g.restore();
+}
+function pines(g,par,baseY,seed,col,size){
+  const u0=cam.x*par-90,u1=u0+VW+180,sp=44;
+  g.save();g.translate(cam.x*(1-par),0);g.fillStyle=col;
+  for(let i=Math.floor(u0/sp);i<=Math.ceil(u1/sp);i++){
+    const R=rng(i*31+seed);if(R()<0.22)continue;
+    const x=i*sp+R()*28,hh=size*(0.6+R()*0.7),w=hh*0.36;
+    for(let k=0;k<3;k++){const yy=baseY-hh*(0.2+k*0.27),ww=w*(1-k*0.24);g.beginPath();g.moveTo(x,yy-hh*0.4);g.lineTo(x+ww,yy);g.lineTo(x-ww,yy);g.closePath();g.fill();}
+    g.fillRect(x-3,baseY-hh*0.2,6,hh*0.2+4);
+  }
+  g.restore();
+}
+function deskArt(g,x){
+  ell(g,x,BASE+24,52,7,'rgba(0,0,0,.3)');
+  g.fillStyle='#241b14';g.fillRect(x-38,BASE-44,5,62);g.fillRect(x+33,BASE-44,5,62);
+  g.fillStyle=lin(g,0,BASE-58,0,BASE-44,[[0,'#7a5e40'],[1,'#573f2a']]);g.fillRect(x-46,BASE-58,92,13);
+  fillPat(g,Tex.pWood,x-46,BASE-58,92,13,.8);
+  g.fillStyle='#3a2e22';g.fillRect(x-42,BASE-32,84,5);
+  g.fillStyle='rgba(0,0,0,.4)';g.fillRect(x-30,BASE-46,60,2);
+  // صندلی
+  g.fillStyle='#2f2419';g.fillRect(x+44,BASE-48,5,66);g.fillRect(x+44,BASE-14,30,5);g.fillRect(x+69,BASE-14,5,32);
+}
+function bedArt(g,x,i,hump){
+  const cols=['#4a5d66','#5e4a4a','#4f5a45','#5a5063','#4a4a5e','#5d5546'];
+  ell(g,x,BASE+30,82,8,'rgba(0,0,0,.35)');
+  g.fillStyle='#1d2126';g.fillRect(x-74,BASE-66,6,92);g.fillRect(x+70,BASE-40,5,66);g.fillRect(x-74,BASE-6,150,5);
+  g.fillStyle='#858c92';rr(g,x-68,BASE-28,140,24,5);g.fill();
+  g.fillStyle=cols[i%cols.length];rr(g,x-38,BASE-38,108,32,9);g.fill();
+  g.fillStyle='rgba(0,0,0,.18)';g.fillRect(x-30,BASE-18,94,2);
+  g.fillStyle='#cbc6b6';rr(g,x-68,BASE-42,36,16,7);g.fill();
+  if(hump>0){
+    const hh=hump*58;g.fillStyle='#17191d';rr(g,x-36,BASE-36-hh,30,hh+14,13);g.fill();
+    ell(g,x-22,BASE-40-hh,11,13,'#17191d');
+  }
+}
+function chairArt(g,x,dir){
+  g.save();g.translate(x,0);g.scale(dir,1);
+  ell(g,0,BASE+22,30,5,'rgba(0,0,0,.3)');
+  g.fillStyle='#2d2319';g.fillRect(-16,BASE-12,34,6);g.fillRect(-14,BASE-6,4,26);g.fillRect(12,BASE-6,4,26);
+  g.fillRect(-16,BASE-62,5,56);g.fillRect(-16,BASE-62,5,4);g.fillStyle='#3b2e20';g.fillRect(-16,BASE-58,5,30);
+  g.restore();
+}
+function lampArt(g,x,y,len,on){
+  g.strokeStyle='#111';g.lineWidth=2;g.beginPath();g.moveTo(x,y);g.lineTo(x,y+len);g.stroke();
+  g.fillStyle='#2a2a2a';g.beginPath();g.moveTo(x-16,y+len+14);g.lineTo(x-6,y+len);g.lineTo(x+6,y+len);g.lineTo(x+16,y+len+14);g.closePath();g.fill();
+  if(on)ell(g,x,y+len+14,10,3,'#f3d58a');
+}
+function tallyArt(g,x,y,n,prog){
+  g.strokeStyle='rgba(235,235,225,.82)';g.lineWidth=2.4;g.lineCap='round';
+  const R=rng(Math.floor(x));
+  for(let k=0;k<n;k++){
+    const gx=x-22+(k%2)*28,gy=y+Math.floor(k/2)*32;
+    if(prog!==undefined&&k>=prog)break;
+    g.beginPath();g.moveTo(gx+(R()-0.5)*2,gy);g.lineTo(gx+(R()-0.5)*3,gy+24);g.stroke();
+  }
+}
+function tallyRow(g,x,y,n){
+  g.strokeStyle='rgba(230,230,215,.82)';g.lineWidth=2.2;g.lineCap='round';
+  for(let k=0;k<n;k++){const gr=Math.floor(k/5),i=k%5,bx=x+gr*70+i*11;
+    if(i<4){g.beginPath();g.moveTo(bx,y);g.lineTo(bx+1,y+28);g.stroke();}
+    else{g.beginPath();g.moveTo(bx-46,y+24);g.lineTo(bx-4,y+4);g.stroke();}}
+}
+function paintLight(g,L,col,gscale){
+  const a=L.a*gscale;
+  if(L.t==='r'){g.fillStyle=rad(g,L.x,L.y,0,L.r,[[0,'rgba('+col+','+a+')'],[0.5,'rgba('+col+','+a*0.45+')'],[1,'rgba('+col+',0)']]);g.fillRect(L.x-L.r,L.y-L.r,L.r*2,L.r*2);}
+  else if(L.t==='rect'){g.fillStyle='rgba('+col+','+a+')';g.fillRect(L.x,L.y,L.w,L.h);}
+  else if(L.t==='beam'){
+    g.fillStyle=lin(g,0,L.top,0,L.top+L.len,[[0,'rgba('+col+','+a+')'],[1,'rgba('+col+',0)']]);
+    g.beginPath();g.moveTo(L.x,L.top);g.lineTo(L.x+L.w,L.top);g.lineTo(L.x+L.w+L.skew+L.w*0.3,L.top+L.len);g.lineTo(L.x+L.skew-L.w*0.3,L.top+L.len);g.closePath();g.fill();
+  }
+}
+function beamL(x,top,w,len,skew,a){return{t:'beam',x,top,w,len,skew,a,c:'120,150,220'};}
+function winL(x,y,w,h,a){return{t:'rect',x,y,w,h,a,c:'110,140,210'};}
+
+/* =====================  حیاط  ===================== */
+SC.courtyard={w:2300,kind:'out',surf:'snow',dark:0.8,min:70,
+  bg(g,x0,x1,t){
+    const w=x1-x0;
+    g.fillStyle=lin(g,0,0,0,BASE,[[0,'#090d20'],[0.5,'#222a4d'],[0.85,'#5a4f69'],[1,'#9a7a80']]);g.fillRect(x0,0,w,BASE+2);
+    // ستاره‌ها
+    g.save();g.translate(cam.x*0.95,0);const R=rng(5);g.fillStyle='rgba(255,255,255,.7)';
+    for(let i=0;i<80;i++){const u=R()*1300,y=R()*190;if(u<cam.x*0.05-5||u>cam.x*0.05+VW+5){continue;}g.globalAlpha=0.3+0.6*Math.abs(Math.sin(t*0.7+i));g.fillRect(u,y,1.6,1.6);}
+    g.restore();g.globalAlpha=1;
+    // ماه
+    g.save();g.translate(cam.x*0.92,0);g.fillStyle=rad(g,640,95,10,150,[[0,'rgba(230,235,255,.9)'],[0.12,'rgba(200,210,255,.35)'],[1,'rgba(150,160,220,0)']]);g.fillRect(480,0,320,260);
+    ell(g,640,95,26,26,'#e8ebf6');ell(g,632,88,22,22,'rgba(200,205,225,.4)');g.restore();
+    ridge(g,0.12,330,120,0.004,1.3,'#171c36');
+    ridge(g,0.25,385,95,0.006,2.7,'#121730');
+    pines(g,0.45,415,3,'#0d1226',130);
+    pines(g,0.7,430,9,'#090d1c',160);
+    // ساختمان مدرسه
+    const bx=1400;
+    g.fillStyle=lin(g,0,110,0,BASE,[[0,'#5a554c'],[1,'#7b7468']]);g.fillRect(bx,125,950,BASE-120);
+    fillPat(g,Tex.pStain,bx,125,950,BASE-120,1);
+    g.fillStyle='#262528';g.fillRect(bx-30,104,1010,26);g.fillStyle='#cfd6e6';g.fillRect(bx-30,94,1010,12);
+    for(let k=0;k<12;k++){g.fillRect(bx-30+k*86,100,40,14+(k*7%9));}
+    for(let r=0;r<2;r++)for(let i=0;i<6;i++){
+      const wx=bx+60+i*150,wy=r?305:165;
+      if(r===1&&Math.abs(wx+35-1950)<90)continue;
+      g.fillStyle='#14100c';g.fillRect(wx-6,wy-6,82,92);
+      const lit=(r===0&&i===1);
+      g.fillStyle=lit?'#e8c27a':'#151a2b';g.fillRect(wx,wy,70,80);
+      if(lit){const fl=0.75+0.25*Math.sin(t*9)*Math.sin(t*3.3);g.fillStyle='rgba(255,215,140,'+(0.5*fl)+')';g.fillRect(wx,wy,70,80);
+        const sx=wx+35+Math.sin(t*0.5)*22;g.fillStyle='rgba(20,14,10,.85)';g.beginPath();g.ellipse(sx,wy+44,10,26,0,0,6.2832);g.fill();ell(g,sx,wy+14,9,10,'rgba(20,14,10,.9)');}
+      g.fillStyle='#0b0907';g.fillRect(wx+33,wy,4,80);g.fillRect(wx,wy+37,70,4);
+      if(!lit){g.strokeStyle='rgba(255,255,255,.12)';g.beginPath();g.moveTo(wx+8,wy+8);g.lineTo(wx+30,wy+40);g.lineTo(wx+18,wy+62);g.stroke();}
+      g.fillStyle='#d9deec';g.fillRect(wx-8,wy+82,86,7);
+    }
+    // ورودی
+    g.fillStyle='#8b8579';g.fillRect(1870,BASE-8,160,14);g.fillStyle='#a49e92';g.fillRect(1850,BASE+6,200,14);
+    doorArt(g,1950,110,152,['#3a2a1d','#503927'],'ورودی');
+    lampArt(g,1950,150,40,false);
+    // برف روی زمین
+    g.fillStyle=lin(g,0,BASE,0,H,[[0,'#b2bcd6'],[1,'#6a7696']]);g.fillRect(x0,BASE,w,H-BASE);
+    fillPat(g,Tex.pSnow,x0,BASE,w,H-BASE,.9);
+    g.fillStyle='rgba(60,72,110,.22)';g.fillRect(x0,454,w,40);
+    // حصار
+    g.fillStyle='#14161c';
+    for(let xx=Math.floor(Math.max(x0,320)/26)*26;xx<Math.min(x1,1380);xx+=26){const hh=(xx*7%5===0)?46:70;g.fillRect(xx,BASE-hh,3,hh+8);g.beginPath();g.moveTo(xx-2,BASE-hh);g.lineTo(xx+1.5,BASE-hh-9);g.lineTo(xx+5,BASE-hh);g.fill();}
+    g.fillRect(Math.max(x0,320),BASE-48,Math.min(x1,1380)-Math.max(x0,320),3);g.fillRect(Math.max(x0,320),BASE-24,Math.min(x1,1380)-Math.max(x0,320),3);
+    // تپه‌ی برف پشت سر
+    g.fillStyle=lin(g,0,BASE-170,0,BASE+60,[[0,'#d8e0f2'],[1,'#8f9bb9']]);
+    g.beginPath();g.moveTo(-100,H);g.lineTo(-100,BASE-150);g.quadraticCurveTo(60,BASE-190,170,BASE-120);g.quadraticCurveTo(250,BASE-60,320,BASE+20);g.lineTo(380,H);g.closePath();g.fill();
+    fillPat(g,Tex.pSnow,-100,BASE-190,480,300,.6);
+    // تابلو
+    g.fillStyle='#1b140e';g.fillRect(680,BASE-150,8,170);g.fillRect(782,BASE-150,8,170);
+    g.fillStyle='#3a2c1e';g.fillRect(660,BASE-150,150,58);fillPat(g,Tex.pWood,660,BASE-150,150,58,.8);
+    g.fillStyle='#cdc3a8';g.font='bold 17px Tahoma,sans-serif';g.textAlign='center';g.fillText('گردنه‌ی بهمن',735,BASE-114);
+    g.strokeStyle='#7a1f22';g.lineWidth=2;g.beginPath();g.moveTo(690,BASE-124);g.lineTo(780,BASE-108);g.stroke();
+    g.fillStyle='#e8ecf8';g.fillRect(656,BASE-155,158,7);
+    // تاب‌ها
+    g.strokeStyle='#17120e';g.lineWidth=7;g.lineCap='round';
+    g.beginPath();g.moveTo(880,BASE-190);g.lineTo(840,BASE+18);g.moveTo(1140,BASE-190);g.lineTo(1180,BASE+18);g.moveTo(870,BASE-190);g.lineTo(1150,BASE-190);g.stroke();
+    for(let i=0;i<4;i++){
+      const px=920+i*68,a=Math.sin(t*0.9+i*1.3)*0.13*(i===3?1.7:1);
+      g.save();g.translate(px,BASE-188);g.rotate(a);g.strokeStyle='#2a2a2e';g.lineWidth=2;
+      g.beginPath();g.moveTo(-9,0);g.lineTo(-9,150);g.moveTo(9,0);g.lineTo(9,150);g.stroke();
+      if(i<3){g.fillStyle='#4a3524';g.fillRect(-15,150,30,6);}
+      g.restore();
+    }
+    g.fillStyle='#d8e0f2';g.fillRect(870,BASE-196,282,8);
+    // ردپا
+    const prints=AN.prints;
+    for(let k=0;k<prints.length;k++){
+      const p=prints[k];if(p.x<x0-20||p.x>x1+20)continue;
+      g.fillStyle='rgba(40,50,80,.5)';g.beginPath();g.ellipse(p.x,p.y,7,3.2,0,0,6.2832);g.fill();
+      if(G.time-p.t>3.5){const a=Math.min(0.45,(G.time-p.t-3.5)*0.15);g.fillStyle='rgba(20,24,44,'+a+')';g.beginPath();g.ellipse(p.x-34,p.y+3,9,3.6,0,0,6.2832);g.fill();}
+    }
+  },
+  lights(t){
+    const fl=0.75+0.25*Math.sin(t*9)*Math.sin(t*3.3);
+    return[{t:'rect',x:1400+60+150,y:165,w:70,h:80,a:0.9*fl,c:'255,200,120'},{t:'r',x:1665,y:210,r:150,a:0.35*fl,c:'255,190,110'}];
+  },
+  objs:[
+    O('snow',150,220,BASE-170,'برف‌ها',()=>say('جاده زیر برف رفته. تا صبح هیچ ماشینی از اینجا رد نمی‌شود.')),
+    O('sign',735,150,BASE-150,'تابلو',()=>say('«مدرسه‌ی شبانه‌روزی گردنه‌ی بهمن — تأسیس ۱۳۴۸». روی «بهمن» را با ناخن خط انداخته‌اند.')),
+    O('swing',1030,300,BASE-190,'تاب‌ها',()=>say('تاب‌ها بی‌باد تاب می‌خورند. سه صندلی… ولی چهار زنجیر.')),
+    O('win',1665,80,165,'پنجره',()=>say('برق اینجا سی سال است قطع است. پس این نور از کجاست؟')),
+    DR('door',1950,BASE-150,'در ورودی','hall',230,{locked:()=>null})
+  ]
+};
+
+/* =====================  راهرو  ===================== */
+const HALLPAL={c0:'#14181a',c1:'#222a2b',w0:'#46564f',w1:'#3c4a44',dado:'#2d3d38',base:'#1c2421',f0:'#4a3a2a',f1:'#2c2118'};
+SC.hall={w:3200,kind:'in',surf:'wood',dark:0.925,min:80,
+  bg(g,x0,x1,t){
+    interior(g,x0,x1,HALLPAL,'wood');
+    for(const lx of [500,1100,1700,2300,2900])if(lx>x0-30&&lx<x1+30)lampArt(g,lx,70,70,false);
+    // اطلاعیه
+    g.fillStyle='#5a4128';g.fillRect(410,170,120,84);g.fillStyle='#d8d2b8';g.fillRect(418,178,40,34);g.fillRect(466,180,54,28);g.fillRect(420,218,96,28);
+    g.fillStyle='#7a1f22';g.fillRect(430,232,70,2);
+    // درها
+    doorArt(g,150,100,150,['#4a2d1e','#5d3a27'],'خروج',{chain:true});
+    doorArt(g,780,100,150,['#3a4a3a','#4a5c4a'],'۱',{glass:true});
+    doorArt(g,1370,100,150,['#3a2a1d','#503927'],'دفتر');
+    doorArt(g,1960,100,150,['#3a3a4a','#4a4a5e'],'خوابگاه',{chain:true});
+    doorArt(g,3000,110,150,['#262a2e','#353b41'],'زیرزمین',{chain:true});
+    // عکس کلاس
+    g.fillStyle='#1a120c';g.fillRect(1010,168,100,76);g.fillStyle='#bfb9a2';g.fillRect(1016,174,88,64);
+    g.fillStyle='#2a2623';
+    for(let r=0;r<3;r++)for(let i=0;i<4;i++){const px=1030+i*20+(r%2)*4,py=190+r*16;ell(g,px,py,4,5,'#2a2623');g.fillRect(px-4,py+4,8,8);}
+    if(G.flags.deskDone){g.fillStyle='#0e0d0c';ell(g,1100,184,4,6,'#0e0d0c');g.fillRect(1096,190,8,26);}
+    // پنجره
+    windowFrame(g,1600,150,100,130,t,true);
+    if(AN.win>0)drawWindowFace(g,1650,206,Math.min(1,AN.win*4));
+    // ساعت
+    g.fillStyle='#1a1a1a';ell(g,2200,170,32,32,'#1a1a1a');ell(g,2200,170,28,28,'#cfc9b0');
+    g.strokeStyle='#111';g.lineWidth=3;g.beginPath();g.moveTo(2200,170);g.lineTo(2200-6,170-20);g.stroke();g.beginPath();g.moveTo(2200,170);g.lineTo(2200+4,170-26);g.stroke();
+    const sa=t*6.2832/60;g.strokeStyle='#8a1f22';g.lineWidth=1.5;g.beginPath();g.moveTo(2200,170);g.lineTo(2200+Math.sin(sa)*26,170-Math.cos(sa)*26);g.stroke();
+    // کمدها
+    for(let i=0;i<12;i++){
+      const lx=2330+i*36;g.fillStyle=lin(g,lx,0,lx+34,0,[[0,'#46535a'],[1,'#37434a']]);g.fillRect(lx,BASE-210,34,214);
+      g.fillStyle='rgba(0,0,0,.4)';g.fillRect(lx+33,BASE-210,2,214);
+      for(let k=0;k<4;k++)g.fillRect(lx+6,BASE-196+k*5,22,2);
+      g.fillStyle='#d8d2b8';g.fillRect(lx+12,BASE-120,10,8);g.fillStyle='#222';g.font='9px sans-serif';g.textAlign='center';g.fillText(fa(i+1),lx+17,BASE-113);
+    }
+    g.fillStyle=lin(g,2810,0,2860,0,[[0,'#2c373d'],[1,'#222c32']]);g.fillRect(2810,BASE-210,48,214);
+    g.fillStyle='rgba(0,0,0,.5)';for(let k=0;k<4;k++)g.fillRect(2820,BASE-196+k*5,28,2);
+    g.fillStyle='#15191c';g.fillRect(2830,BASE-100,8,14);
+    fillPat(g,Tex.pStain,2330,BASE-210,530,214,.8);
+  },
+  lights(t){
+    return[beamL(1600,150,100,290,-70,0.35),winL(1600,150,100,130,0.5),{t:'r',x:150,y:140,r:90,a:0.28,c:'60,255,120'}];
+  },
+  objs:[
+    DR('exit',150,BASE-150,'در ورودی','',0,{locked:()=>'قفل شد. صدای چرخیدن کلید را شنیدم… از این طرف.'}),
+    O('board',470,130,170,'اطلاعیه',()=>{say('«شمارش شبانه ساعت ۹ در راهرو. غیبت ممنوع.» و پایینش با خودکار: «سیزدهمی را نشمار.»',5);addNote('board');}),
+    DR('d_class',780,BASE-150,'کلاس','classroom',200,{locked:()=>null}),
+    O('photo',1060,100,168,'عکس',()=>say(G.flags.deskDone?'ردیف آخر… کسی پشتِ سرِ بقیه ایستاده. قبلاً نبود. دوباره شمردم: سیزده.':'عکس کلاس: دوازده پسر، سه ردیفِ چهارتایی. همه به دوربین نگاه می‌کنند… جز یکی.',5)),
+    DR('d_office',1370,BASE-150,'دفتر مدیر','office',200,{locked:()=>G.items.key_office?null:'درِ دفتر مدیر قفل است.'}),
+    O('hwin',1650,110,150,'پنجره',()=>say('بیرون فقط برف است. روی شیشه، از بیرون، اثر انگشت مانده.')),
+    DR('d_dorm',1960,BASE-150,'خوابگاه','dorm',200,{locked:()=>G.items.key_dorm?null:'زنجیر و قفل. کلیدش را باید پیدا کنم.'}),
+    O('clock',2200,70,138,'ساعت',()=>say('ساعت روی ۳:۱۳ ایستاده. فقط عقربه‌ی ثانیه‌شمار هنوز می‌چرخد.')),
+    O('lockers',2545,440,BASE-210,'کمدها',()=>say('دوازده کمد شماره‌دار.')),
+    O('locker13',2834,50,BASE-210,'کمد بی‌شماره',()=>{Snd.knock(2);vib([0,60,80,60]);say('از داخل کمدِ سیزدهم، دو ضربه آمد.');}),
+    DR('d_base',3000,BASE-150,'زیرزمین','basement',200,{timed:1.1,locked:()=>G.items.key_base?null:'درِ زیرزمین. قفلِ زنگ‌زده. کلیدش را باید جایی پیدا کنم.'})
+  ]
+};
+
+/* =====================  کلاس  ===================== */
+const CLPAL={c0:'#141718',c1:'#232a2b',w0:'#5a6258',w1:'#4a5348',dado:'#39433c',base:'#222a25',f0:'#51402c',f1:'#2d2318'};
+SC.classroom={w:2800,kind:'in',surf:'wood',dark:0.925,min:80,
+  bg(g,x0,x1,t){
+    interior(g,x0,x1,CLPAL,'wood');
+    for(const wx of [1100,1650,2200])windowFrame(g,wx-45,120,90,140,t,true);
+    doorArt(g,100,100,150,['#3a4a3a','#4a5c4a'],'راهرو',{glass:true});
+    // تخته
+    g.fillStyle='#1a120a';g.fillRect(480,122,440,164);g.fillStyle=lin(g,0,130,0,280,[[0,'#243229'],[1,'#1b251e']]);g.fillRect(488,130,424,148);
+    fillPat(g,Tex.pStain,488,130,424,148,1);
+    g.fillStyle='rgba(230,230,215,.82)';g.font='bold 20px Tahoma,sans-serif';g.textAlign='center';
+    g.fillText('۱۳ بهمن ۱۳۷۱',700,165);g.font='17px Tahoma,sans-serif';g.fillText('امشب هم می‌شمارمتان',700,196);
+    tallyRow(g,520,234,12);
+    g.fillStyle='#4a3a28';g.fillRect(480,286,440,8);g.fillStyle='#d8d2c0';g.fillRect(620,282,20,4);
+    // میز معلم
+    g.fillStyle='#2a1f16';g.fillRect(250,BASE-70,170,76);g.fillStyle='#5a4430';g.fillRect(244,BASE-76,182,10);fillPat(g,Tex.pWood,244,BASE-76,182,10,.8);
+    g.fillStyle='rgba(0,0,0,.4)';g.fillRect(262,BASE-60,70,3);g.fillRect(262,BASE-40,70,3);
+    // بخاری
+    g.fillStyle='#141414';g.fillRect(2440,BASE-90,64,96);g.fillStyle='#202020';g.fillRect(2436,BASE-96,72,10);
+    g.fillStyle='#181818';g.fillRect(2466,70,12,BASE-96-70);
+    // میزها
+    for(let i=0;i<12;i++)if(1000+i*120>x0-120&&1000+i*120<x1+120)deskArt(g,1000+i*120);
+    if(G.flags.desk13){
+      const k=Math.min(1,AN.desk);g.save();g.globalAlpha=k;deskArt(g,2640);g.restore();
+      g.fillStyle='rgba(0,0,0,.5)';g.fillRect(2690,BASE-44,1,2);
+    }
+    // قفسه
+    g.fillStyle='#2a2018';g.fillRect(1900,BASE-170,0,0);
+  },
+  lights(t){
+    const L=[];for(const wx of [1100,1650,2200]){L.push(beamL(wx-45,120,90,310,-60,0.3));L.push(winL(wx-45,120,90,140,0.5));}
+    return L;
+  },
+  objs:(()=>{
+    const a=[
+      DR('exit',100,BASE-150,'راهرو','hall',780,{locked:()=>null}),
+      O('board',700,430,122,'تخته',()=>{say('تخته: «۱۳ بهمن ۱۳۷۱ — امشب هم می‌شمارمتان». زیرش دوازده خط‌شمارش… و جای یک خط خالی.',5);addNote('tally');}),
+      O('tdesk',335,180,BASE-80,'میز معلم',()=>say('کشوها پر از گچ‌های شکسته‌اند. همه به اندازه‌ی یک انگشت.')),
+      O('stove',2470,80,BASE-96,'بخاری',()=>say('بخاری سرد است. ولی پای آن، خاکسترِ تازه.'))
+    ];
+    for(let i=0;i<12;i++)a.push(O('desk'+i,1000+i*120,92,BASE-60,'میز',()=>countDesk(i)));
+    a.push(O('desk13',2640,92,BASE-60,'میز سیزدهم',()=>{
+      if(!G.flags.desk13)return;
+      if(!G.items.key_office){giveItem('key_office');say('اسم روی میز را با تیغ تراشیده‌اند. زیرِ میز یک کلید برنجی چسبیده بود: «دفتر».',5);}
+      else say('میز سیزدهم. هنوز گرم است.');
+    },{vis:()=>!!G.flags.desk13}));
+    return a;
+  })()
+};
+
+/* =====================  دفتر مدیر  ===================== */
+const OFPAL={c0:'#17120e',c1:'#2a2118',w0:'#5e4d3a',w1:'#4c3e2f',dado:'#3a2a1c',base:'#251a12',f0:'#3b2c1e',f1:'#241912'};
+SC.office={w:1900,kind:'in',surf:'wood',dark:0.92,min:80,
+  bg(g,x0,x1,t){
+    interior(g,x0,x1,OFPAL,'wood');
+    doorArt(g,110,100,150,['#3a2a1d','#503927'],'راهرو');
+    // قفسه‌ی کتاب
+    g.fillStyle='#24180f';g.fillRect(250,BASE-230,160,236);
+    const R=rng(8);for(let r=0;r<5;r++){g.fillStyle='#120c07';g.fillRect(254,BASE-224+r*46,152,3);let bx=258;while(bx<398){const bw=6+R()*9,bh=26+R()*14;g.fillStyle='hsl('+(R()*40)+','+(15+R()*25)+'%,'+(18+R()*14)+'%)';g.fillRect(bx,BASE-224+r*46+42-bh-2,bw,bh);bx+=bw+1;}}
+    // میز مدیر
+    g.fillStyle='#2e2016';g.fillRect(500,BASE-70,220,78);g.fillStyle='#5f4631';g.fillRect(490,BASE-78,240,10);fillPat(g,Tex.pWood,490,BASE-78,240,10,.8);
+    g.fillStyle='rgba(0,0,0,.45)';g.fillRect(512,BASE-60,90,3);g.fillRect(512,BASE-38,90,3);
+    // دفتر
+    g.fillStyle='#d6cfb3';g.fillRect(560,BASE-88,56,12);g.fillStyle='#a79f84';g.fillRect(588,BASE-88,2,12);g.fillStyle='#3a3a36';for(let k=0;k<5;k++)g.fillRect(564,BASE-86+k*2,20,1);
+    // چراغ مطالعه
+    g.fillStyle='#22301f';g.fillRect(660,BASE-98,6,20);g.beginPath();g.moveTo(646,BASE-98);g.lineTo(680,BASE-98);g.lineTo(670,BASE-116);g.lineTo(656,BASE-116);g.closePath();g.fill();
+    // تصویر مدیر با چشم‌های دنبال‌کننده
+    g.fillStyle='#120c07';g.fillRect(910,140,92,116);g.fillStyle='#b8ae92';g.fillRect(916,146,80,104);
+    g.fillStyle='#2a2622';g.fillRect(922,214,68,34);ell(g,956,184,22,28,'#a89a86');g.fillStyle='#20201e';g.beginPath();g.ellipse(956,168,24,16,0,Math.PI,0);g.fill();
+    const ex=clamp((P.x-956)/260,-1,1)*3;
+    for(let s=-1;s<=1;s+=2){ell(g,956+s*9,184,5.5,4,'#e8e4d6');ell(g,956+s*9+ex,184,2.4,2.4,'#0a0a0a');}
+    g.fillStyle='#4a3a2a';g.fillRect(940,206,32,2);
+    // تقویم
+    g.fillStyle='#d8d4c0';g.fillRect(1160,150,62,92);g.fillStyle='#8a1f22';g.fillRect(1160,150,62,16);
+    g.fillStyle='#222';g.font='bold 9px Tahoma,sans-serif';g.textAlign='center';g.fillText('بهمن ۱۳۷۱',1191,162);
+    g.font='7px sans-serif';for(let r=0;r<5;r++)for(let c=0;c<6;c++)g.fillText(fa(r*6+c+1),1166+c*10+3,180+r*11);
+    g.strokeStyle='#b01a20';g.lineWidth=1.6;g.beginPath();g.ellipse(1166+0*10+3+10,180+2*11-3,6,6,0,0,6.2832);g.stroke();
+    // پنجره
+    windowFrame(g,1520,140,90,130,t,true);
+    // رادیو روی میز
+    g.fillStyle='#2a2018';g.fillRect(1360,BASE-52,110,58);g.fillStyle='#4a3a2a';g.fillRect(1350,BASE-60,130,10);
+    g.fillStyle='#3b3128';g.fillRect(1372,BASE-100,80,44);g.fillStyle='#17130f';g.fillRect(1380,BASE-92,40,28);
+    ell(g,1436,BASE-86,7,7,'#6a5a3a');ell(g,1436,BASE-66,5,5,'#6a5a3a');
+    g.strokeStyle='#777';g.lineWidth=2;g.beginPath();g.moveTo(1456,BASE-100);g.lineTo(1480+Math.sin(t*0.4)*2,BASE-150);g.stroke();
+    // گاوصندوق
+    g.fillStyle='#202428';g.fillRect(1650,BASE-130,110,136);fillPat(g,Tex.pConc,1650,BASE-130,110,136,.8);
+    g.fillStyle='#2f353b';g.fillRect(1660,BASE-120,90,116);
+    ell(g,1705,BASE-72,16,16,'#454c54');ell(g,1705,BASE-72,9,9,'#2a2f35');
+    g.fillStyle='#1a1d20';g.fillRect(1730,BASE-80,5,24);
+    g.fillStyle='#d8d4b4';g.font='8px Tahoma,sans-serif';g.textAlign='center';g.fillText('سال آخرین شمارش',1705,BASE-104);
+    if(G.items.key_dorm){g.fillStyle='rgba(0,0,0,.5)';g.fillRect(1660,BASE-120,6,116);}
+  },
+  lights(t){
+    const fl=FX.flick>0?(Math.random()<0.5?0.2:1):0.9+0.1*Math.sin(t*20);
+    return[{t:'r',x:663,y:BASE-100,r:210,a:0.75*fl,c:'255,190,110'},beamL(1520,140,90,290,-50,0.3),winL(1520,140,90,130,0.5)];
+  },
+  objs:[
+    DR('exit',110,BASE-150,'راهرو','hall',1370,{locked:()=>null}),
+    O('shelf',330,170,BASE-230,'قفسه',()=>say('همه‌ی کتاب‌ها جلد «حساب» دارند. در هر کدام، همه‌ی اعداد دوازده‌اند.')),
+    O('register',590,70,BASE-92,'دفتر حضور و غیاب',()=>readRegister()),
+    O('portrait',956,100,140,'عکس مدیر',()=>say('عکس مدیر. چشم‌هایش… دنبالم می‌چرخند.')),
+    O('calendar',1191,70,150,'تقویم',()=>{say('تقویم بهمن ۱۳۷۱. روز سیزدهم را با قرمز دایره کرده‌اند.',4.5);addNote('calendar');}),
+    O('radio',1415,110,BASE-100,'رادیو',()=>{say('رادیو خاموش است. ولی آنتنش به سمتِ من چرخیده.');Snd.radioOn(0.05);later(1.1,()=>Snd.radioOn(0));}),
+    O('safe',1705,110,BASE-130,'گاوصندوق',()=>openSafe())
+  ]
+};
+
+/* =====================  خوابگاه  ===================== */
+const DPAL={c0:'#101315',c1:'#1d2326',w0:'#3d4d55',w1:'#323f46',dado:'#27333a',base:'#1a2226',f0:'#3d3022',f1:'#231a12'};
+SC.dorm={w:3300,kind:'in',surf:'wood',dark:0.935,min:80,
+  bg(g,x0,x1,t){
+    interior(g,x0,x1,DPAL,'wood');
+    doorArt(g,110,100,150,['#3a3a4a','#4a4a5e'],'راهرو');
+    for(let i=0;i<6;i++)windowFrame(g,620+i*500-45,125,90,135,t,true);
+    for(let i=0;i<12;i++){const bx=520+i*190;if(bx>x0-120&&bx<x1+120){
+      bedArt(g,bx,i,(AN.bed>0&&i===2)?Math.min(1,Math.sin(Math.min(1,AN.bed/2.4)*3.1416)*1.2):0);
+      g.fillStyle='#cfc8ae';g.fillRect(bx-66,230,30,16);g.fillStyle='#222';g.font='11px Tahoma,sans-serif';g.textAlign='center';g.fillText(fa(i+1),bx-51,242);
+    }}
+    // تخت سیزدهم
+    bedArt(g,3040,12,0);
+  },
+  lights(t){
+    const L=[];for(let i=0;i<6;i++){const wx=620+i*500;L.push(beamL(wx-45,125,90,310,-55,0.3));L.push(winL(wx-45,125,90,135,0.5));}
+    return L;
+  },
+  objs:(()=>{
+    const TXT=['زیر بالش امیر یک ماشین چوبی است. چرخ‌هایش را با مداد کشیده‌اند.','روی تخت بهرام یک نوار کاست بی‌برچسب است. نمی‌خواهم بشنومش.','پویا روی دیوار یک خانه کشیده. در خانه، دوازده پنجره.','جواد یک مهره‌ی آبی زیر ملافه قایم کرده بود.','نامه‌ی حسین نیمه‌تمام مانده: «مامان، امشب هم می‌شمارند و…»','دفتر حساب رضا: همه‌ی مسئله‌ها یک سؤال دارند: «چند نفریم؟»','','تخت سعید خالی است. فقط یک لنگه کفش.','شاهین بالای تختش دوازده خط کشیده. آخری نصفه مانده.','کیان بالشش را با نخ قرمز دوخته بود.','مهدی هر شب زیر لب می‌شمرد. روی تخت کنده: «۱ ۲ ۳ ۴ …»','تخت یاسین. ملافه‌اش هنوز گرم است.'];
+    const a=[DR('exit',110,BASE-150,'راهرو','hall',1960,{locked:()=>null,auto:true})];
+    for(let i=0;i<12;i++)a.push(O('bed'+i,520+i*190,150,BASE-70,'تخت '+fa(i+1),()=>bedAct(i,TXT[i])));
+    return a;
+  })()
+};
+
+/* =====================  زیرزمین  ===================== */
+const BPAL={c0:'#0c0e10',c1:'#171b1e',w0:'#3c4448',w1:'#2f363a',dado:'#242a2d',base:'#171b1d',f0:'#2e3438',f1:'#1c2124'};
+SC.basement={w:3200,kind:'base',surf:'conc',dark:0.95,min:80,
+  bg(g,x0,x1,t){
+    interior(g,x0,x1,BPAL,'conc');
+    fillPat(g,Tex.pConc,x0,70,x1-x0,BASE-70,0.9);
+    // لوله‌ها
+    g.fillStyle='#2a2f33';g.fillRect(x0,92,x1-x0,16);g.fillStyle='#1d2124';g.fillRect(x0,118,x1-x0,10);
+    g.fillStyle='rgba(255,255,255,.08)';g.fillRect(x0,94,x1-x0,3);
+    for(let xx=Math.floor(x0/240)*240;xx<x1;xx+=240){g.fillStyle='#14171a';g.fillRect(xx,86,10,48);}
+    // پله
+    g.fillStyle='#262c30';for(let k=0;k<6;k++)g.fillRect(40+k*26,BASE-210+k*28,200-k*26,28);
+    g.fillStyle='#14171a';g.fillRect(20,BASE-216,24,230);
+    // دیگ بخار
+    g.fillStyle=lin(g,640,0,800,0,[[0,'#3a2f2a'],[0.5,'#54443a'],[1,'#2d2420']]);g.fillRect(640,BASE-200,170,206);
+    fillPat(g,Tex.pConc,640,BASE-200,170,206,.7);g.fillStyle='#1c1613';g.fillRect(660,BASE-80,60,50);
+    g.fillStyle='rgba(255,120,40,'+(0.25+0.1*Math.sin(t*6))+')';g.fillRect(668,BASE-72,44,34);
+    // ستون‌های شمارش
+    for(let i=0;i<12;i++){const tx=1200+i*100;if(tx>x0-80&&tx<x1+80){g.fillStyle='rgba(0,0,0,.25)';g.fillRect(tx-34,170,68,170);tallyArt(g,tx,190,10);}}
+    if(G.flags.tally13){tallyArt(g,2400,190,10,Math.floor(Math.min(1,AN.tally/2.2)*10));g.fillStyle='rgba(0,0,0,.25)';g.fillRect(2366,170,68,170);}
+    // در ۱۳
+    g.fillStyle='#0c0e0f';g.fillRect(2880,BASE-168,140,176);g.fillStyle=lin(g,2890,0,3010,0,[[0,'#23282c'],[0.5,'#323940'],[1,'#1e2327']]);g.fillRect(2890,BASE-158,120,166);
+    fillPat(g,Tex.pConc,2890,BASE-158,120,166,.8);
+    g.fillStyle='rgba(235,235,225,.8)';g.font='bold 54px sans-serif';g.textAlign='center';g.fillText('۱۳',2950,BASE-80);
+    g.fillStyle='#14171a';g.fillRect(2975,BASE-60,26,36);g.fillStyle=G.flags.doorOpen?'#2fa84f':'#a82f2f';g.fillRect(2982,BASE-55,12,6);
+    if(G.flags.doorOpen){g.fillStyle='#000';g.fillRect(2890,BASE-158,120,166);g.fillStyle='rgba(255,255,255,.1)';g.fillRect(2890,BASE-158,10,166);}
+    // چاله
+    for(const px of [1000,1700,2500]){g.fillStyle='rgba(20,30,40,.7)';g.beginPath();g.ellipse(px,BASE+50,80,10,0,0,6.2832);g.fill();g.fillStyle='rgba(120,150,190,.12)';g.beginPath();g.ellipse(px-10,BASE+49,50,4,0,0,6.2832);g.fill();}
+    for(const lx of [500,1500,2500])lampArt(g,lx,70,50,true);
+  },
+  lights(t){
+    const f=0.8+0.2*Math.sin(t*13)*Math.sin(t*5);
+    return[{t:'r',x:500,y:140,r:150,a:0.5*f,c:'255,215,140'},{t:'r',x:1500,y:140,r:150,a:0.5*(1.1-f*0.3),c:'255,215,140'},{t:'r',x:2500,y:140,r:150,a:0.5*f,c:'255,215,140'},{t:'r',x:700,y:BASE-50,r:120,a:0.35,c:'255,120,50'}];
+  },
+  objs:(()=>{
+    const a=[
+      O('stairs',150,200,BASE-210,'پله‌ها',()=>{say('پله‌ها از بالا بسته شد. از بالا… چیزی به در می‌کوبد.');}),
+      O('boiler',725,170,BASE-200,'دیگ بخار',()=>say('هنوز گرم است. کسی تازه خاموشش کرده.')),
+      O('bdoor',2950,120,BASE-160,'درِ ۱۳',()=>openFinalDoor())
+    ];
+    for(let i=0;i<12;i++)a.push(O('t'+i,1200+i*100,70,170,'خط‌شمارش',()=>countTally(i),{bot:BASE+10}));
+    return a;
+  })()
+};
+
+/* =====================  اتاق آخر  ===================== */
+const FPAL={c0:'#08090b',c1:'#14171a',w0:'#2c3236',w1:'#232a2e',dado:'#1b2124',base:'#12171a',f0:'#262b2e',f1:'#161a1c'};
+SC.final={w:1800,kind:'base',surf:'conc',dark:0.965,min:80,
+  bg(g,x0,x1,t){
+    interior(g,x0,x1,FPAL,'conc');
+    for(let i=0;i<12;i++)chairArt(g,380+i*82,1);
+    g.fillStyle='#0a0a0a';g.fillRect(1560,BASE-70,110,76);g.fillStyle='#1a1d20';g.fillRect(1548,BASE-80,134,12);
+    g.fillStyle='#16181a';g.fillRect(1566,BASE-200,100,128);
+    const fl=0.7+0.3*Math.sin(t*30)*Math.sin(t*7);
+    g.fillStyle='rgba(200,225,255,'+(0.5+0.3*fl)+')';g.fillRect(1576,BASE-190,80,98);
+    g.fillStyle='rgba(0,0,0,.3)';for(let k=0;k<12;k++)g.fillRect(1576,BASE-190+k*8,80,2);
+    chairArt(g,1440,1);
+    g.fillStyle='rgba(230,230,220,.2)';g.font='bold 40px sans-serif';g.textAlign='center';
+  },
+  lights(t){const fl=0.7+0.3*Math.sin(t*30)*Math.sin(t*7);return[{t:'r',x:1616,y:BASE-140,r:290,a:0.8*fl,c:'170,200,255'}];},
+  objs:[
+    O('chair13',1440,60,BASE-70,'صندلی',()=>finalSeq()),
+    O('tv',1616,110,BASE-200,'تلویزیون',()=>say('صفحه برف می‌زند. صدای نفس از آن می‌آید.'))
+  ]
+};
+
+/* =====================================================
+   منطق بازی: بازیکن، معماها، هیولا، ترس‌ها، پایان
+   ===================================================== */
+const In={left:false,right:false,run:false};
+const Mon={on:false,scene:'',x:0,mode:'stalk',speed:60,watched:false,stare:0,pend:null};
+let CP={scene:'courtyard',x:300,mon:null};
+let stepAcc=0,nextFlick=14,baseT=6,near=null;
+
+function busy(){return G.lock||G.modal||G.paused||FX.fadeDir!==0||!!FX.scare||G.state!=='play';}
+
+/* ---------- عبور بین صحنه‌ها ---------- */
+function goto(id,x,done){
+  if(FX.fadeDir!==0)return;
+  FX.fadeDir=1;FX.fadeCb=()=>{
+    const chasing=!!G.flags.chase;
+    G.scene=id;P.x=x;P.target=null;P.unlock=null;P.vx=0;
+    const sc=SC[id];cam.x=clamp(P.x-VW*0.42,0,Math.max(0,sc.w-VW));
+    if(chasing){
+      if(id==='basement'){endChase();}
+      else{Mon.on=false;Mon.pend={scene:id,x:x,delay:2.8};}
+    }
+    Snd.setKind(sc.kind);
+    if(sc.enter)sc.enter();
+    save();
+    if(done)done();
+  };
+}
+function doorAct(o){
+  const msg=o.locked?o.locked():null;
+  if(msg){Snd.buzz();say(msg);return;}
+  if(!o.to)return;
+  if(o.timed){if(!P.unlock){P.unlock={t:0,dur:o.timed,o};Snd.creak(0.8);vib(30);}return;}
+  Snd.door();goto(o.to,o.spawn);
+}
+function interact(o){
+  if(busy())return;
+  if(o.vis&&!o.vis())return;
+  if(o.to!==undefined){doorAct(o);return;}
+  Snd.click();if(o.act)o.act(o);
+}
+function objsNow(){return SC[G.scene].objs.filter(o=>!o.vis||o.vis());}
+
+/* ---------- ورودی ---------- */
+function worldTap(sx,sy){
+  if(busy())return;
+  let best=null,bd=1e9;
+  for(const o of objsNow()){
+    const hw=o.w/2+26;
+    if(Math.abs(sx-o.x)<=hw&&sy>=o.top-26&&sy<=o.bot+12){const d=Math.abs(sx-o.x);if(d<bd){bd=d;best=o;}}
+  }
+  if(best){P.target={x:best.x,o:best,reach:best.reach||54};}
+  else if(sy>BASE-70){P.target={x:sx,o:null,reach:14};}
+}
+
+/* ---------- بازیکن ---------- */
+function updatePlayer(dt){
+  const sc=SC[G.scene];let want=0;
+  if(!busy()){
+    if(In.left)want-=1;if(In.right)want+=1;
+    if(want!==0){P.target=null;}
+    else if(P.target){
+      const dx=P.target.x-P.x;
+      if(Math.abs(dx)>P.target.reach)want=Math.sign(dx);
+      else{const o=P.target.o;P.target=null;if(o)interact(o);}
+    }
+  }
+  if(P.unlock)want=0;
+  const chase=!!G.flags.chase;
+  const run=In.run||chase||(P.target&&Math.abs(P.target.x-P.x)>520);
+  const sp=want===0?0:(run?285:165);
+  P.vx=lerp(P.vx,want*sp,clamp(dt*10,0,1));
+  if(Math.abs(P.vx)>4)P.x+=P.vx*dt;
+  if(want!==0)P.dir=want;
+  P.x=clamp(P.x,sc.min,sc.w-80);
+  P.walk+=Math.abs(P.vx)*dt*0.048;
+  stepAcc+=Math.abs(P.vx)*dt;
+  if(stepAcc>(run?96:68)){
+    stepAcc=0;Snd.step(sc.surf,run);
+    if(G.scene==='courtyard'){AN.prints.push({x:P.x,y:FEET+10+((P.step++%2)?7:-3),t:G.time});if(AN.prints.length>110)AN.prints.shift();}
+  }
+  // باز کردن قفل زمان‌دار
+  if(P.unlock){
+    P.unlock.t+=dt;
+    if(P.unlock.t>=P.unlock.dur){const o=P.unlock.o;P.unlock=null;Snd.unlock();Snd.door();goto(o.to,o.spawn);}
+  }
+  // درهای خودکار هنگام فرار
+  if(chase&&!busy()&&!P.unlock){
+    for(const o of sc.objs){
+      if(o.to===undefined)continue;
+      if(o.auto&&P.x<o.x+66){doorAct(o);break;}
+      if(o.timed&&Math.abs(P.x-o.x)<60&&(!o.locked||!o.locked())){doorAct(o);break;}
+    }
+  }
+}
+
+/* ---------- جلوه‌ها ---------- */
+function scare(kind,dur){
+  FX.scare={t:0,dur:dur||0.95,kind};
+  Snd.stinger(1);Snd.scream(kind==='catch'?1:0.85);
+  FX.shake=1;FX.flash=1;FX.glitch=0.09;vib([0,90,40,220]);
+}
+function blackout(sec){FX.blk=sec;}
+function flickerNow(sec){FX.flick=sec;}
+
+/* ---------- هیولا ---------- */
+function startStalk(){
+  Mon.on=true;Mon.scene='dorm';Mon.x=3040;Mon.mode='stalk';Mon.speed=64;Mon.stare=0;Mon.pend=null;
+  CP={scene:'dorm',x:200,mon:'stalk'};
+  Snd.creak(1.5);Snd.whisper(5,0.5);
+  say('صدای فنرِ تختی… از انتهای اتاق. انگار کسی بلند شد.',4);
+}
+function startChase(){
+  Mon.on=true;Mon.scene='dorm';Mon.mode='chase';Mon.speed=235;Mon.pend=null;
+  Mon.x=Math.min(P.x+560,SC.dorm.w-80);
+  CP={scene:'dorm',x:P.x,mon:'chase'};G.flags.chase=1;
+  FX.flick=2;say('بدو!',2);vib([0,120,60,120]);
+}
+function endChase(){
+  Mon.on=false;Mon.pend=null;G.flags.chase=0;FX.tension=0;Snd.setTension(0);
+}
+function updateMon(dt){
+  if(Mon.pend){
+    Mon.pend.delay-=dt;
+    if(Mon.pend.delay<=0){Mon.scene=Mon.pend.scene;Mon.x=Mon.pend.x;Mon.on=true;Mon.pend=null;Snd.slam();vib(80);}
+  }
+  if(!Mon.on||Mon.scene!==G.scene){FX.tension=Math.max(0,FX.tension-dt);Snd.setTension(FX.tension);return;}
+  if(busy()&&!FX.scare){/* در حین گفتگو/نوشته‌ها هم‌چنان حرکت می‌کند */}
+  if(G.dead)return;
+  const dist=Mon.x-P.x,ad=Math.abs(dist),to=dist>=0?1:-1;
+  if(Mon.mode==='stalk'){
+    const lit=(P.dir===to)&&ad<560&&FX.off<=0;
+    Mon.watched=lit;
+    if(!lit){Mon.x-=to*Mon.speed*dt;Mon.stare=Math.max(0,Mon.stare-dt);}
+    else if(ad<430){
+      Mon.stare+=dt;
+      if(Mon.stare>3.4){Mon.stare=0;Mon.x-=to*135;Snd.stinger(0.45);FX.flick=0.9;vib([0,70]);}
+    }
+  }else{Mon.x-=to*Mon.speed*dt;}
+  if(ad<300&&Math.random()<dt*2.2)FX.flick=Math.max(FX.flick,0.15);
+  const tn=clamp(1-ad/950,0,1)*(Mon.mode==='chase'?1:0.85);
+  FX.tension=lerp(FX.tension,tn,clamp(dt*4,0,1));Snd.setTension(FX.tension);
+  if(ad<54&&!FX.scare)caught();
+}
+function caught(){
+  if(G.dead)return;G.dead=true;P.unlock=null;
+  scare('catch',1.1);
+  later(1.6,()=>{
+    FX.fadeDir=1;FX.fade=0.6;
+    FX.fadeCb=()=>{
+      G.dead=false;G.flags.chase=0;Mon.on=false;Mon.pend=null;Snd.setTension(0);FX.tension=0;
+      G.scene=CP.scene;P.x=CP.x;P.target=null;P.vx=0;P.dir=CP.mon==='chase'?-1:1;
+      const sc=SC[G.scene];cam.x=clamp(P.x-VW*0.42,0,Math.max(0,sc.w-VW));
+      Snd.setKind(sc.kind);
+      if(CP.mon==='chase'){later(0.9,()=>startChase());say('این بار سریع‌تر…',2);}
+      else{G.flags.stalk=0;}
+    };
+  });
+}
+
+/* ---------- شمارش میزها ---------- */
+function countOf(prefix){return Object.keys(G.counts).filter(k=>k[0]===prefix).length;}
+function countDesk(i){
+  if(G.flags.deskDone){say('دوازده تا بودند. سیزدهمی هم هست… ولی من نشمردمش.');return;}
+  if(G.counts['d'+i]){say('این را شمرده بودم.',1.6);return;}
+  G.counts['d'+i]=1;const n=countOf('d');
+  Snd.tick(n);vib(20);
+  say(fa(n)+'… روی میز کنده شده: «'+NAMES[i]+'»',2.4);
+  if(n===12){G.lock=true;later(2.3,desk13Event);}
+}
+function desk13Event(){
+  Snd.duck(1.8);blackout(1.8);
+  later(1.8,()=>{
+    Snd.unduck();Snd.creak(1.6);Snd.knock(1);
+    later(0.9,()=>{
+      G.flags.desk13=1;G.flags.deskDone=1;AN.desk=0;
+      Snd.stinger(0.55);vib([0,80,50,120]);FX.flick=1.2;FX.shake=0.5;
+      say('…سیزده.',3);addNote('desks');addNote('tally');
+      later(1.8,()=>{G.lock=false;});
+    });
+  });
+}
+
+/* ---------- دفتر مدیر ---------- */
+function readRegister(){
+  if(G.flags.regRead){say('دوازده اسم، یک خط خالی. جوهرِ خط سیزدهم هنوز نم دارد.');return;}
+  G.lock=true;
+  say('دفتر حضور و غیاب، ۱۳ بهمن ۱۳۷۱: «امیر، بهرام، پویا، جواد، حسین، رضا، نیما، سعید، شاهین، کیان، مهدی، یاسین».',5.2);Snd.paper();
+  later(5.4,()=>{say('کنار اسم «نیما» نوشته‌اند: «اولین غایب — تخت ۷».',4);});
+  later(9.6,()=>{say('خط سیزدهم خالی است… ولی جوهرش تازه است.',3.6);});
+  later(13.2,()=>{Snd.duck(1.3);blackout(1.3);Snd.radioOn(0.25);});
+  later(14.6,()=>{Snd.radioOn(0);scare('face',0.9);});
+  later(16,()=>{G.flags.regRead=1;addNote('register');G.lock=false;say('باید تخت ۷ را پیدا کنم. کلید خوابگاه… گاوصندوق؟',4);});
+}
+function openSafe(){
+  if(G.items.key_dorm){say('گاوصندوق باز است. خالی.');return;}
+  addNote('safe');
+  openKeypad('گاوصندوق — سالِ آخرین شمارش','1371',()=>{
+    giveItem('key_dorm');addNote('paper');
+    say('داخل گاوصندوق: یک کلید و یک کاغذ: «اگر شمردی و یکی اضافه بود، به او نگو که شمرده‌ای.»',6);
+  },'سالِ ۴ رقمی را وارد کن');
+}
+
+/* ---------- خوابگاه ---------- */
+function bedAct(i,txt){
+  if(i===6){
+    if(G.items.key_base){say('تخت نیما. خالی.');return;}
+    G.lock=true;
+    say('زیر بالشِ نیما… یک کلید.',2.4);
+    later(2.4,()=>{giveItem('key_base');addNote('nima');Snd.duck(1.3);blackout(1.3);});
+    later(3.7,()=>{Snd.unduck();Snd.scream(0.7);Snd.slam();vib([0,100,60,100]);G.lock=false;startChase();});
+    return;
+  }
+  say(txt,4.2);
+}
+
+/* ---------- زیرزمین ---------- */
+function countTally(i){
+  if(G.flags.tallyDone||G.flags.tally13){return;}
+  if(G.counts['t'+i]){say('این ستون را شمرده بودم.',1.6);return;}
+  G.counts['t'+i]=1;const n=countOf('t');
+  Snd.tick(n);vib(20);say(fa(n)+'…',1.4);
+  if(n===12){G.lock=true;later(1.6,()=>{
+    Snd.duck(1.5);blackout(1.5);
+    later(1.5,()=>{
+      Snd.unduck();G.flags.tally13=1;AN.tally=0;Snd.thump(1);
+      for(let k=0;k<6;k++)later(k*0.38,()=>Snd.paper());
+      say('…و کسی همان‌جا، با گچ، ستون سیزدهم را نوشت.',4);
+      later(3.4,()=>{G.flags.tallyDone=1;addNote('tallies');addNote('base');G.lock=false;say('۱۳. شماره‌ی کل: سیزده.',3.5);});
+    });
+  });}
+}
+function openFinalDoor(){
+  if(G.flags.doorOpen){Snd.door();goto('final',140);return;}
+  openKeypad('قفل درِ ۱۳','13',()=>{
+    G.flags.doorOpen=1;Snd.unlock();later(0.6,()=>{Snd.door();goto('final',140);});
+  },'شماره‌ی کل را وارد کن');
+}
+
+/* ---------- پایان اپیزود ---------- */
+function finalSeq(){
+  if(G.flags.final)return;G.flags.final=1;G.lock=true;P.target=null;
+  say('روی صندلی نشستم. دوازده صندلی دیگر، همه به من نگاه می‌کنند.',3.4);
+  later(3.6,()=>{Snd.duck(2.4);blackout(2.4);});
+  later(6,()=>{Snd.unduck();});
+  for(let k=1;k<=12;k++){
+    later(6.2+k*1.05,()=>{say(fa(k)+'…',1.0);Snd.whisper(3,k%2?-0.8:0.8);Snd.tick(k);vib(18);if(k>8)FX.flick=0.3;});
+  }
+  later(6.2+12*1.05+1.1,()=>{Snd.duck(2.6);blackout(2.6);});
+  later(6.2+12*1.05+3.5,()=>{Snd.unduck();Snd.whisper(2,0);say('…',1);});
+  later(6.2+12*1.05+4.8,()=>{scare('final',1.5);say('سیزده.',1.5);});
+  later(6.2+12*1.05+6.8,()=>{blackout(30);endScreens();});
+}
+function endScreens(){
+  G.state='end';wipeSave();
+  const el=$('end'),box=$('endText');el.className='panel on';box.innerHTML='';
+  const dv=G.model||deviceInfo().name,now=new Date();
+  const hh=fa(String(now.getHours()).padStart(2,'0')),mm=fa(String(now.getMinutes()).padStart(2,'0'));
+  const lines=[
+    ['err','خطا: فایل بازی آسیب دیده است.'],
+    ['',''],
+    ['reg','دفتر حضور و غیاب — شب ۱۳ بهمن'],
+    ['reg','حاضر: ۱۲'],
+    ['reg','شمرده‌شده: ۱۳'],
+    ['reg red','نفر سیزدهم: '+(dv||'کسی که همین الان این صفحه را در دست دارد')],
+    ['reg','ساعت ثبت: '+hh+':'+mm+(G.battery!=null?'   —   باتری: '+fa(G.battery)+'٪':'')],
+    ['',''],
+    ['big','ادامه دارد…'],
+    ['sub2','اپیزود ۲: دوازده نفر']
+  ];
+  let t=0.8;
+  lines.forEach(([cls,txt],i)=>{
+    later(t,()=>{const d=document.createElement('div');d.className='ln '+cls;d.textContent=txt;box.appendChild(d);if(cls==='err'){Snd.buzz();vib([0,50,30,50]);FX.glitch=0.15;}else if(txt)Snd.beep();});
+    t+=(cls==='err'?1.8:cls==='big'?1.4:0.95);
+  });
+  later(t+0.5,()=>{$('endBtns').className='on';});
+}
+
+/* ---------- کیپد و دفتر ---------- */
+let kpVal='',kpCode='',kpOk=null,kpFails=0;
+function openKeypad(title,code,onOk,sub){
+  kpVal='';kpCode=code;kpOk=onOk;kpFails=0;G.modal=true;
+  $('kpTitle').textContent=title;$('kpSub').textContent=sub||'';
+  kpDraw();$('keypad').className='panel on';
+}
+function kpDraw(){let s='';for(let i=0;i<kpCode.length;i++)s+=(i<kpVal.length?fa(kpVal[i]):'•')+' ';$('kpDisp').textContent=s.trim();}
+function kpPress(k){
+  if(k==='c'){kpVal='';}
+  else if(k==='ok'){kpSubmit();return;}
+  else if(kpVal.length<kpCode.length){kpVal+=k;Snd.beep();}
+  kpDraw();
+  if(kpVal.length===kpCode.length&&k!=='c')setTimeout(kpSubmit,180);
+}
+function kpSubmit(){
+  if(!$('keypad').classList.contains('on'))return;
+  if(kpVal===kpCode){closeKeypad();Snd.unlock();const f=kpOk;kpOk=null;if(f)f();}
+  else{
+    Snd.buzz();vib([0,60,40,60]);kpVal='';kpDraw();kpFails++;
+    const d=$('kpDisp');d.classList.remove('shake');void d.offsetWidth;d.classList.add('shake');
+    if(kpFails>=3)$('kpSub').textContent='راهنما: '+(kpCode.length===4?'تاریخِ روی تخته یا تقویم را ببین.':'عددی که نباید می‌شمردی.');
+  }
+}
+function closeKeypad(){$('keypad').className='panel';G.modal=false;}
+function openNotes(){
+  if(G.state!=='play'||G.lock||FX.scare)return;
+  G.modal=true;
+  const items=Object.keys(G.items).map(k=>'<div class="it"><b>'+ITEMS[k].n+'</b><span>'+ITEMS[k].d+'</span></div>').join('')||'<div class="em">هنوز چیزی برنداشته‌ای.</div>';
+  const notes=G.notes.map(k=>'<div class="nt">'+NOTES[k]+'</div>').join('')||'<div class="em">هنوز یادداشتی نداری. به همه‌چیز دست بزن.</div>';
+  $('noteBody').innerHTML='<h3>وسایل</h3>'+items+'<h3>یادداشت‌ها</h3>'+notes+'<div id="hintBox"></div>';
+  $('note').className='panel on';
+}
+function closeNotes(){$('note').className='panel';G.modal=false;}
+
+/* =====================================================
+   رویدادهای صحنه‌ها، رندر، ورودی و حلقه‌ی اصلی
+   ===================================================== */
+SC.courtyard.enter=function(){};
+SC.courtyard.update=function(dt){
+  if(!G.flags.printsSaid&&P.x>1250){G.flags.printsSaid=1;say('ردپاهای پشت سرم… دوتا شده‌اند؟',4.2);Snd.whisper(3,-0.5);}
+};
+SC.hall.enter=function(){
+  if(!G.flags.inHall){
+    G.flags.inHall=1;G.lock=true;Snd.slam();FX.flick=1.4;FX.shake=0.6;vib([0,100]);
+    later(1.3,()=>{say('در پشت سرم قفل شد. برق نیست… فقط چراغ‌قوه.',4.2);G.lock=false;});
+  }
+};
+SC.hall.update=function(dt){
+  if(!G.flags.winFace&&P.x>1560&&P.x<1740&&P.dir===1){G.flags.winFace=1;AN.win=0.55;Snd.stinger(0.5);vib([0,70]);FX.flick=0.5;}
+  if(AN.win>0)AN.win-=dt;
+};
+SC.classroom.enter=function(){
+  if(!G.flags.deskDone&&!G.flags.classSaid){G.flags.classSaid=1;say('ردیف میزها… بشمارمشان. روی هر میز یک‌بار لمس کن.',4.8);}
+};
+SC.classroom.update=function(dt){if(G.flags.desk13&&AN.desk<1)AN.desk+=dt*0.7;};
+SC.office.enter=function(){
+  if(!G.flags.officeSaid){G.flags.officeSaid=1;say('بوی کاغذ کهنه. روی میز، دفتر حضور و غیاب باز مانده.',4);}
+};
+SC.dorm.enter=function(){
+  if(!G.flags.dormSaid){G.flags.dormSaid=1;say('دوازده تخت. همه مرتب… انگار همین الان بلند شده‌اند.',4.2);}
+};
+SC.dorm.update=function(dt){
+  if(!G.flags.stalk&&!G.items.key_base&&P.x>1050){G.flags.stalk=1;startStalk();}
+  if(!G.flags.bedSit&&P.x>740&&P.x<1000&&P.dir===1){
+    G.flags.bedSit=1;AN.bed=0.01;Snd.creak(1.6);Snd.stinger(0.4);FX.flick=0.7;vib([0,60]);
+    later(2.7,()=>say('فقط ملافه بود… شاید.',3));
+  }
+  if(AN.bed>0){AN.bed+=dt;if(AN.bed>2.4)AN.bed=0;}
+};
+SC.basement.enter=function(){
+  if(!G.flags.inBase){
+    G.flags.inBase=1;G.lock=true;Snd.slam();Snd.thump(3);vib([0,100,80,100]);FX.shake=0.7;FX.flick=1.2;
+    later(1.7,()=>{say('درِ بالا بسته شد. از آن طرف، چیزی به در می‌کوبد.',4.6);G.lock=false;});
+  }
+};
+SC.basement.update=function(dt){
+  if(G.flags.tally13&&AN.tally<3)AN.tally+=dt;
+  if(!G.flags.inBase||G.flags.doorOpen)return;
+  baseT-=dt;if(baseT<=0){baseT=rnd(7,13);Snd.thump(2);FX.shake=Math.max(FX.shake,0.25);vib(40);}
+};
+SC.final.enter=function(){
+  Snd.radioOn(0.05);
+  say('اتاقی با دوازده صندلی… و یک صندلی خالی، رو به تلویزیون.',4.6);
+};
+
+/* ---------- بوم و نور ---------- */
+const cv=$('cv'),ctx=cv.getContext('2d',{alpha:false,desynchronized:true});
+const LC=document.createElement('canvas'),lg=LC.getContext('2d',{alpha:true,desynchronized:true});
+let vigC=null,snowP=[],dust=[];
+function buildVig(){
+  vigC=mkc(128,72);const g=vigC.getContext('2d');
+  g.fillStyle=rad(g,64,36,8,84,[[0,'rgba(0,0,0,0)'],[0.6,'rgba(0,0,0,.35)'],[1,'rgba(0,0,0,.92)']]);g.fillRect(0,0,128,72);
+}
+function resize(){
+  const w=window.innerWidth||960,h=window.innerHeight||540,dpr=window.devicePixelRatio||1;
+  const q=G.settings.quality==='low'?0.72:G.settings.quality==='medium'?1:1.5;
+  const k=Math.min(dpr,q,1400/h);
+  cv.width=Math.max(320,Math.round(w*k));cv.height=Math.max(180,Math.round(h*k));
+  S=cv.height/H;VW=cv.width/S;
+  const lightScale=G.settings.quality==='low'?4:G.settings.quality==='medium'?3:2.5;LC.width=Math.ceil(cv.width/lightScale);LC.height=Math.ceil(cv.height/lightScale);
+  buildVig();
+}
+function flashGeo(){
+  const ang=(P.dir>0?0.05:Math.PI-0.05)+Math.sin(G.time*1.3)*0.015;
+  return{ox:P.x+P.dir*30,oy:FEET-110,ang,len:G.scene==='courtyard'?700:620,half:0.3};
+}
+function coneHole(g,f,pw){
+  for(const m of [1,0.78,0.58,0.4,0.24]){
+    g.fillStyle=rad(g,f.ox,f.oy,6,f.len,[[0,'rgba(255,255,255,'+0.55*pw+')'],[0.5,'rgba(255,255,255,'+0.3*pw+')'],[1,'rgba(255,255,255,0)']]);
+    g.beginPath();g.moveTo(f.ox,f.oy);g.arc(f.ox,f.oy,f.len,f.ang-f.half*m,f.ang+f.half*m);g.closePath();g.fill();
+  }
+}
+function flashI(){
+  if(FX.off>0)return 0;
+  let v=0.97+0.03*Math.sin(G.time*23);
+  if(FX.flick>0)v=Math.random()<0.5?rnd(0.05,0.5):rnd(0.6,1);
+  return v;
+}
+function renderLight(sc,t,fi){
+  const k=S/(G.settings.quality==='low'?4:G.settings.quality==='medium'?3:2.5);
+  lg.setTransform(1,0,0,1,0,0);lg.globalCompositeOperation='source-over';lg.clearRect(0,0,LC.width,LC.height);
+  lg.fillStyle='rgba(0,0,0,'+sc.dark+')';lg.fillRect(0,0,LC.width,LC.height);
+  lg.setTransform(k,0,0,k,-cam.x*k,0);lg.globalCompositeOperation='destination-out';
+  const L=sc.lights?sc.lights(t):[];
+  for(const l of L)paintLight(lg,l,'255,255,255',1);
+  if(fi>0)coneHole(lg,flashGeo(),fi);
+  lg.fillStyle=rad(lg,P.x,FEET-80,0,160,[[0,'rgba(255,255,255,.62)'],[1,'rgba(255,255,255,0)']]);lg.fillRect(P.x-170,FEET-250,340,330);
+  lg.globalCompositeOperation='source-over';
+}
+
+/* ---------- ذرات ---------- */
+function initParticles(){
+  const low=G.settings.quality==='low';snowP=[];for(let i=0;i<(low?55:140);i++)snowP.push({x:Math.random(),y:Math.random(),z:0.3+Math.random()*0.7});
+  dust=[];for(let i=0;i<(low?22:60);i++)dust.push({x:Math.random(),y:0.15+Math.random()*0.7,vx:rnd(-6,6),vy:rnd(-4,4),a:0.2+Math.random()*0.4});
+}
+function updParticles(dt){
+  const out=SC[G.scene].kind==='out';
+  if(out)for(const s of snowP){s.y+=dt*0.06*s.z*H/H*1.6;s.x-=dt*0.01*s.z;if(s.y>1){s.y=-0.02;s.x=Math.random();}if(s.x<0)s.x=1;}
+  else for(const d of dust){d.x+=d.vx*dt/VW;d.y+=d.vy*dt/H;if(d.x<0)d.x=1;if(d.x>1)d.x=0;if(d.y<0.1)d.y=0.85;if(d.y>0.9)d.y=0.15;}
+}
+
+/* ---------- رندر ---------- */
+function render(){
+  const g=ctx,sc=SC[G.scene],t=G.time,fi=flashI();
+  g.setTransform(1,0,0,1,0,0);g.fillStyle='#000';g.fillRect(0,0,cv.width,cv.height);
+  g.globalCompositeOperation='source-over';g.globalAlpha=1;
+  const sh=FX.shake*9,sx=(Math.random()-0.5)*sh*S,sy=(Math.random()-0.5)*sh*S;
+  g.setTransform(S,0,0,S,-cam.x*S+sx,sy);
+  const x0=cam.x-30,x1=cam.x+VW+30;
+  g.textAlign='center';
+  sc.bg(g,x0,x1,t);
+  g.textAlign='center';
+  if(G.scene==='dorm'&&!G.flags.stalk&&!G.items.key_base)drawFigure(g,3040,t,'back',-1);
+  if(Mon.on&&Mon.scene===G.scene){
+    const f=Mon.x>P.x?-1:1;
+    drawFigure(g,Mon.x,t,Mon.mode==='chase'?'run':(Mon.watched?'stalk':'stalk'),f);
+  }
+  if(FX.echo){const e=FX.echo;g.save();g.globalAlpha=clamp(1-e.t/e.dur,0,1)*.42;g.filter='blur(1.1px)';drawFigure(g,e.x,t,'stalk',e.dir);g.filter='none';g.restore();}
+  drawPlayer(g,t);
+  // مه و گرد و غبار و برف
+  const out=sc.kind==='out';
+  for(let i=0;i<6;i++){
+    const fx=((i*610+t*(9+i*3))%(sc.w+800))-400;if(fx<x0-280||fx>x1+280)continue;
+    const fy=(out?BASE+10:BASE-40)+Math.sin(t*0.2+i)*30;
+    g.fillStyle=rad(g,fx,fy,0,270,[[0,'rgba(190,205,225,'+(out?0.1:0.075)+')'],[1,'rgba(190,205,225,0)']]);g.fillRect(fx-270,fy-270,540,540);
+  }
+  if(out){g.fillStyle='#fff';for(const s of snowP){g.globalAlpha=0.35+0.5*s.z;g.fillRect(cam.x+s.x*VW,s.y*H,1+s.z*1.8,1+s.z*1.8);}g.globalAlpha=1;}
+  else{g.fillStyle='#e8eef8';for(const d of dust){g.globalAlpha=d.a;g.beginPath();g.arc(cam.x+d.x*VW,d.y*H,1.3,0,6.2832);g.fill();}g.globalAlpha=1;}
+  // تاریکی و نور
+  renderLight(sc,t,fi);
+  g.setTransform(1,0,0,1,0,0);g.imageSmoothingEnabled=true;
+  g.drawImage(LC,sx,sy,cv.width,cv.height);
+  g.setTransform(S,0,0,S,-cam.x*S+sx,sy);
+  g.save();g.globalCompositeOperation='lighter';
+  if(fi>0){const f=flashGeo();for(const m of [1,0.7,0.45]){g.fillStyle=rad(g,f.ox,f.oy,6,f.len,[[0,'rgba(255,228,165,'+0.085*fi+')'],[1,'rgba(255,228,165,0)']]);g.beginPath();g.moveTo(f.ox,f.oy);g.arc(f.ox,f.oy,f.len,f.ang-f.half*m,f.ang+f.half*m);g.closePath();g.fill();}}
+  if(sc.lights)for(const l of sc.lights(t))if(l.c)paintLight(g,l,l.c,0.2);
+  g.restore();
+  // نشانگر اشیا
+  if(G.state==='play'&&!G.modal&&G.settings.marks){
+    for(const o of objsNow()){
+      const d=Math.abs(o.x-P.x);if(d>320)continue;
+      if(/^(desk|t)\d+$/.test(o.id)&&G.counts[o.id.charAt(0)==='d'?'d'+o.id.slice(4):'t'+o.id.slice(1)])continue;
+      if(o.id==='desk13'&&G.items.key_office)continue;
+      const a=(0.55-d/700)*(0.6+0.4*Math.sin(t*3+o.x));if(a<=0)continue;
+      const yy=Math.max(o.top-16,40)+Math.sin(t*2.4+o.x)*3;
+      g.fillStyle='rgba(235,240,255,'+a+')';g.beginPath();g.moveTo(o.x,yy+8);g.lineTo(o.x-5,yy);g.lineTo(o.x,yy-8);g.lineTo(o.x+5,yy);g.closePath();g.fill();
+    }
+  }
+  // سطح شاشه
+  g.setTransform(1,0,0,1,0,0);
+  g.drawImage(vigC,0,0,cv.width,cv.height);
+  if(FX.tension>0.05){g.fillStyle=rad(g,cv.width/2,cv.height/2,cv.height*0.25,cv.width*0.7,[[0,'rgba(120,0,0,0)'],[1,'rgba(150,0,10,'+(0.35*FX.tension)+')']]);g.fillRect(0,0,cv.width,cv.height);}
+  if(FX.flick>0&&G.state==='play'){g.fillStyle='rgba(190,205,230,'+(Math.min(.07,FX.flick*.055))+')';g.fillRect(0,0,cv.width,cv.height);}
+  if(G.settings.quality!=='low'){g.save();g.globalCompositeOperation='overlay';g.globalAlpha=G.settings.quality==='high'?.14:.09;g.fillStyle=Tex.pGrain[(t*12|0)%3];
+  g.translate((t*17)%128,(t*11)%128);g.fillRect(-128,-128,cv.width+256,cv.height+256);g.restore();}
+  if(FX.scare){const u=FX.scare.t/FX.scare.dur;drawScare(g,cv.width,cv.height,u,FX.scare.kind);}
+  if(FX.flash>0){g.fillStyle='rgba(255,255,255,'+Math.min(1,FX.flash*0.8)+')';g.fillRect(0,0,cv.width,cv.height);}
+  const ba=Math.max(FX.fade,FX.blk>0?1:0);
+  if(ba>0){g.fillStyle='rgba(0,0,0,'+ba+')';g.fillRect(0,0,cv.width,cv.height);}
+  const gl=FX.glitch>0?'invert(1) contrast(1.5)':'';
+  if(cv._gl!==gl){cv.style.filter=gl;cv._gl=gl;}
+}
+
+/* ---------- به‌روزرسانی ---------- */
+let hudCache={};
+function setCls(id,c){if(hudCache[id]!==c){hudCache[id]=c;$(id).classList.toggle('on',c==='on');}}
+function setTxt(id,v){if(hudCache[id]!==v){hudCache[id]=v;$(id).textContent=v;}}
+function update(dt){
+  G.time+=dt;
+  tickTimers(dt);updSub(dt);
+  FX.shake=Math.max(0,FX.shake-dt*2.2);FX.flash=Math.max(0,FX.flash-dt*4);
+  FX.glitch=Math.max(0,FX.glitch-dt);FX.flick=Math.max(0,FX.flick-dt);FX.off=Math.max(0,FX.off-dt);FX.blk=Math.max(0,FX.blk-dt);
+  if(FX.scare){FX.scare.t+=dt;if(FX.scare.t>=FX.scare.dur)FX.scare=null;}
+  if(FX.fadeDir!==0){
+    FX.fade+=FX.fadeDir*dt*3.4;
+    if(FX.fadeDir>0&&FX.fade>=1){FX.fade=1;FX.fadeDir=-1;const cb=FX.fadeCb;FX.fadeCb=null;if(cb)cb();}
+    else if(FX.fadeDir<0&&FX.fade<=0){FX.fade=0;FX.fadeDir=0;}
+  }
+  const sc=SC[G.scene];
+  if(G.state==='play'){
+    autoSaveT+=dt;if(autoSaveT>=12){autoSaveT=0;save();}
+    if(FX.echo){FX.echo.t+=dt;if(FX.echo.t>=FX.echo.dur)FX.echo=null;}
+    if(!G.flags.chase&&!FX.scare&&!G.modal&&!G.paused){
+      ambientScareT-=dt;
+      if(ambientScareT<=0){
+        ambientScareT=rnd(19,34);
+        const roll=Math.random();
+        if(roll<.48){FX.echo={x:P.x+P.dir*rnd(260,390),dir:-P.dir,t:0,dur:rnd(.55,.9)};Snd.whisper(3,P.dir*.55);FX.flick=Math.max(FX.flick,.38);}
+        else if(roll<.82){Snd.knock(Math.random()<.5?2:3);FX.shake=Math.max(FX.shake,.12);}
+        else{Snd.door();FX.flick=Math.max(FX.flick,.72);say('صدای قدمی از اتاق کناری آمد…',2.3);}
+      }
+    }
+    updatePlayer(dt);updateMon(dt);
+    if(sc.update)sc.update(dt);
+    nextFlick-=dt;if(nextFlick<=0){nextFlick=rnd(14,28);FX.flick=Math.max(FX.flick,0.24);}
+    Snd.update(dt);
+    let tx=P.x-VW*0.42+P.dir*70;tx=clamp(tx,0,Math.max(0,sc.w-VW));cam.x=lerp(cam.x,tx,clamp(dt*4,0,1));
+    updHud();
+  }else if(G.state==='title'){
+    cam.x=clamp(260+Math.sin(G.time*0.12)*60,0,SC.courtyard.w-VW);
+  }
+  updParticles(dt);
+}
+function updHud(){
+  near=null;let nd=1e9;
+  if(!busy())for(const o of objsNow()){const d=Math.abs(o.x-P.x);if(d<(o.reach||54)+46&&d<nd){nd=d;near=o;}}
+  setCls('bAct',near?'on':'');if(near)setTxt('actLbl',near.n);
+  let c='';
+  if(G.scene==='classroom'&&!G.flags.deskDone&&countOf('d')>0)c='شمارش: '+fa(countOf('d'));
+  else if(G.scene==='basement'&&!G.flags.tallyDone&&countOf('t')>0)c='شمارش: '+fa(countOf('t'));
+  setTxt('cnt',c);
+  setCls('bBack',(Mon.on&&Mon.scene===G.scene&&Mon.mode==='stalk')?'on':'');
+  const p=P.unlock?Math.round(P.unlock.t/P.unlock.dur*100):0;
+  setCls('prog',P.unlock?'on':'');if(P.unlock)$('progBar').style.width=p+'%';
+}
+
+/* ---------- حلقه ---------- */
+let lastTs=0;
+function frame(ts){
+  requestAnimationFrame(frame);
+  let dt=(ts-lastTs)/1000;lastTs=ts;if(!(dt>0))dt=0.016;dt=Math.min(dt,0.05);
+  if(!G.paused&&!G.modal)update(dt);
+  render();
+}
+
+/* ---------- شروع و ادامه ---------- */
+function showTitle(){
+  G.state='title';G.scene='courtyard';P.x=430;P.dir=1;cam.x=260;Snd.setKind('out');
+  $('title').className='panel on';$('settings').className='panel';$('end').className='panel';$('endBtns').className='';
+  $('hud').className='';setCls('btnCont',loadSave()?'on':'');
+}
+function resetWorld(){
+  G.items={};G.flags={};G.notes=[];G.counts={};G.dead=false;G.lock=false;G.modal=false;G.paused=false;
+  Mon.on=false;Mon.pend=null;AN.prints.length=0;AN.win=0;AN.bed=0;AN.tally=0;AN.desk=0;
+  FX.fade=0;FX.fadeDir=0;FX.blk=0;FX.scare=null;FX.echo=null;FX.tension=0;ambientScareT=22;autoSaveT=0;Timers.length=0;P.vx=0;P.target=null;P.unlock=null;
+  CP={scene:'courtyard',x:300,mon:null};
+}
+function beginPlay(){
+  $('title').className='panel';$('settings').className='panel';$('end').className='panel';$('hud').className='on';
+  G.state='play';
+}
+const CARDS=['سازمان میراث فرهنگی از تو خواسته آرشیو یک مدرسه‌ی متروکه را دیجیتال کنی.','مدرسه‌ی شبانه‌روزی گردنه‌ی بهمن.\nسی‌وچند سال پیش، شبِ یک کولاک، دوازده دانش‌آموز آنجا ناپدید شدند.','تنها چیزی که پیدا شد، دفتر حضور و غیاب بود.'];
+function newGame(){
+  Snd.init();resetWorld();wipeSave();
+  G.state='intro';$('title').className='panel';$('hud').className='';
+  G.scene='courtyard';P.x=300;P.dir=1;cam.x=0;Snd.setKind('out');
+  const card=$('card');let t=0.4;
+  CARDS.forEach((txt,i)=>{
+    later(t,()=>{card.textContent=txt;card.className='on';});
+    later(t+3.7,()=>{card.className='';});
+    t+=4.6;
+  });
+  later(t,()=>{
+    beginPlay();FX.fade=1;FX.fadeDir=-1;
+    later(1.6,()=>{Snd.thump(1);FX.shake=0.8;vib([0,200]);say('پشت سرم، جاده زیر برف رفت. تا صبح راهی نیست.',4.6);});
+    later(6.6,()=>say('باید وارد ساختمان شوم. در، آن سمت حیاط است.',4));
+  });
+}
+function continueGame(){
+  const s=loadSave();if(!s){newGame();return;}
+  Snd.init();resetWorld();
+  G.items=s.items||{};G.flags=s.flags||{};G.notes=s.notes||[];G.counts=s.counts||{};
+  G.flags.chase=0;G.flags.stalk=0;
+  let sc=s.scene,x=s.x;
+  if(!SC[sc]){sc='courtyard';x=300;}
+  if(sc==='final'){sc='basement';x=2800;}
+  G.scene=sc;P.x=x;P.dir=s.dir===-1?-1:1;
+  const S2=SC[sc];cam.x=clamp(P.x-VW*0.42,0,Math.max(0,S2.w-VW));
+  Snd.setKind(S2.kind);beginPlay();FX.fade=1;FX.fadeDir=-1;
+  say('ادامه… دوباره تاریکی.',2.4);
+}
+function pause(on){
+  if(G.state!=='play')return;
+  G.paused=on;$('pause').className=on?'panel on':'panel';
+  if(on)Snd.suspend();else Snd.resume();
+}
+
+/* ---------- اتصال رابط ---------- */
+function holdBtn(id,key){
+  const e=$(id);
+  const on=ev=>{ev.preventDefault();In[key]=true;e.classList.add('dn');try{e.setPointerCapture(ev.pointerId);}catch(x){}};
+  const off=ev=>{ev.preventDefault();In[key]=false;e.classList.remove('dn');};
+  e.addEventListener('pointerdown',on);
+  ['pointerup','pointercancel','lostpointercapture'].forEach(n=>e.addEventListener(n,off));
+}
+function tapBtn(id,fn){
+  const e=$(id);
+  e.addEventListener('click',ev=>{ev.preventDefault();fn(ev);});
+}
+function wireUI(){
+  holdBtn('bL','left');holdBtn('bR','right');holdBtn('bRun','run');
+  tapBtn('bAct',()=>{if(near)interact(near);});
+  tapBtn('bBack',()=>{if(!busy()){P.dir=-P.dir;P.target=null;Snd.click();}});
+  tapBtn('bNote',()=>{if(G.modal&&$('note').classList.contains('on'))closeNotes();else if(!G.paused)openNotes();});
+  tapBtn('bPause',()=>pause(true));
+  tapBtn('btnNoteClose',closeNotes);
+  tapBtn('btnHint',()=>{$('hintBox').textContent='راهنما: '+hint();});
+  tapBtn('btnKpClose',()=>{closeKeypad();});
+  tapBtn('btnStart',()=>{try{if(screen.orientation&&screen.orientation.lock)screen.orientation.lock('landscape').catch(()=>{});}catch(e){}newGame();});
+  tapBtn('btnCont',()=>{try{if(screen.orientation&&screen.orientation.lock)screen.orientation.lock('landscape').catch(()=>{});}catch(e){}continueGame();});
+  tapBtn('btnResume',()=>pause(false));
+  tapBtn('btnRestart',()=>{pause(false);newGame();});
+  tapBtn('btnFull',async()=>{try{if(!document.fullscreenElement&&document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen();else if(document.exitFullscreen)await document.exitFullscreen();if(screen.orientation&&screen.orientation.lock)await screen.orientation.lock('landscape');}catch(e){toast('تمام‌صفحه در این مرورگر پشتیبانی نمی‌شود.');}});
+  const openSettings=()=>{$('settings').className='panel on';$('pause').className='panel';};
+  tapBtn('btnSettingsTitle',openSettings);tapBtn('btnSettingsPause',openSettings);
+  tapBtn('btnSettingsBack',()=>{$('settings').className='panel';if(G.state==='play'&&G.paused)$('pause').className='panel on';});
+  $('volume').value=G.settings.volume;
+  setTxt('btnSound',G.settings.mute?'صدا: خاموش':'صدا: روشن');
+  setTxt('btnVib',G.settings.vibrate?'لرزش: روشن':'لرزش: خاموش');
+  setTxt('btnMarks',G.settings.marks?'نشانگر اشیا: روشن':'نشانگر اشیا: خاموش');
+  setTxt('btnVibSettings',G.settings.vibrate?'روشن':'خاموش');
+  setTxt('btnMarksSettings',G.settings.marks?'روشن':'خاموش');
+  $('volume').addEventListener('input',e=>{Snd.setVolume(e.target.value);saveSettings();});
+  const setQuality=q=>{G.settings.quality=q;saveSettings();resize();initParticles();['qLow','qMed','qHigh'].forEach(id=>$(id).style.borderColor='rgba(217,212,195,.45)');$('q'+({low:'Low',medium:'Med',high:'High'}[q])).style.borderColor='#c9a45b';};
+  tapBtn('qLow',()=>setQuality('low'));tapBtn('qMed',()=>setQuality('medium'));tapBtn('qHigh',()=>setQuality('high'));setQuality(G.settings.quality);
+  tapBtn('btnVibSettings',()=>{G.settings.vibrate=!G.settings.vibrate;saveSettings();setTxt('btnVibSettings',G.settings.vibrate?'روشن':'خاموش');});
+  tapBtn('btnMarksSettings',()=>{G.settings.marks=!G.settings.marks;saveSettings();setTxt('btnMarksSettings',G.settings.marks?'روشن':'خاموش');});
+  tapBtn('btnMenu',()=>{pause(false);resetWorld();Timers.length=0;showTitle();});
+  tapBtn('btnSound',()=>{const m=!G.settings.mute;G.settings.mute=m;saveSettings();Snd.setMuted(m);setTxt('btnSound',m?'صدا: خاموش':'صدا: روشن');});
+  tapBtn('btnVib',()=>{G.settings.vibrate=!G.settings.vibrate;saveSettings();setTxt('btnVib',G.settings.vibrate?'لرزش: روشن':'لرزش: خاموش');});
+  tapBtn('btnMarks',()=>{G.settings.marks=!G.settings.marks;saveSettings();setTxt('btnMarks',G.settings.marks?'نشانگر اشیا: روشن':'نشانگر اشیا: خاموش');});
+  tapBtn('btnAgain',()=>{Timers.length=0;resetWorld();Snd.radioOn(0);showTitle();});
+  const grid=$('kpGrid');
+  ['1','2','3','4','5','6','7','8','9','c','0','ok'].forEach(k=>{
+    const b=document.createElement('button');b.className='kk';b.textContent=k==='c'?'پاک':k==='ok'?'تأیید':fa(k);
+    b.addEventListener('click',ev=>{ev.preventDefault();kpPress(k);});grid.appendChild(b);
+  });
+  const activeTouches=new Map(),sidePointers={left:new Set(),right:new Set()};
+  let lastSideTap={side:'',time:0},sprintSide='';
+  cv.addEventListener('pointerdown',ev=>{
+    if(G.state!=='play'||G.paused||G.modal)return;
+    ev.preventDefault();
+    const r=cv.getBoundingClientRect(),x=(ev.clientX-r.left)/r.width;
+    if(x<0.44||x>0.56){
+      const side=x<0.44?'left':'right',now=performance.now();
+      if(lastSideTap.side===side&&now-lastSideTap.time<=340){In.run=true;sprintSide=side;}
+      lastSideTap={side,time:now};
+      sidePointers[side].add(ev.pointerId);In[side]=true;
+      activeTouches.set(ev.pointerId,{side,start:now});
+      try{cv.setPointerCapture(ev.pointerId);}catch(e){}
+    }else{
+      worldTap((ev.clientX-r.left)/r.width*VW+cam.x,(ev.clientY-r.top)/r.height*H);
+    }
+  });
+  const releaseTouch=ev=>{
+    const touch=activeTouches.get(ev.pointerId);if(!touch)return;
+    activeTouches.delete(ev.pointerId);sidePointers[touch.side].delete(ev.pointerId);
+    In[touch.side]=sidePointers[touch.side].size>0;
+    if(In.run&&sprintSide===touch.side&&sidePointers[sprintSide].size===0){In.run=false;sprintSide='';}
+  };
+  ['pointerup','pointercancel','lostpointercapture'].forEach(n=>cv.addEventListener(n,releaseTouch));
+  document.addEventListener('contextmenu',e=>e.preventDefault());
+  const km={ArrowLeft:'left',a:'left',A:'left',ArrowRight:'right',d:'right',D:'right',Shift:'run'};
+  window.addEventListener('keydown',e=>{
+    if(km[e.key]){In[km[e.key]]=true;e.preventDefault();}
+    else if(e.key==='e'||e.key===' '||e.key==='Enter'){if(near)interact(near);}
+    else if(e.key==='n'||e.key==='N'){if(G.modal)closeNotes();else openNotes();}
+    else if(e.key==='l'||e.key==='L'){if(!busy())P.dir=-P.dir;}
+    else if(e.key==='Escape'){if(G.paused)pause(false);else pause(true);}
+  });
+  window.addEventListener('keyup',e=>{if(km[e.key])In[km[e.key]]=false;});
+  window.addEventListener('blur',()=>{In.left=false;In.right=false;In.run=false;activeTouches.clear();sidePointers.left.clear();sidePointers.right.clear();sprintSide='';});
+  window.addEventListener('resize',resize);window.addEventListener('orientationchange',()=>setTimeout(resize,120));window.addEventListener('beforeunload',()=>{if(G.state==='play')save();});
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden){if(G.state==='play')save();Snd.suspend();if(G.state==='play'&&!G.modal)pause(true);}
+    else{if(!G.paused)Snd.resume();}
+  });
+}
+
+/* ---------- راه‌اندازی ---------- */
+function boot(){
+  loadSettings();buildTex();makePats(ctx);resize();initParticles();wireUI();
+  try{if(navigator.getBattery)navigator.getBattery().then(b=>{G.battery=Math.round(b.level*100);}).catch(()=>{});}catch(e){}
+  try{if(navigator.userAgentData&&navigator.userAgentData.getHighEntropyValues)navigator.userAgentData.getHighEntropyValues(['model']).then(v=>{if(v&&v.model&&v.model.length>1)G.model=v.model;}).catch(()=>{});}catch(e){}
+  showTitle();
+  window.__n13={cam,G,P,SC,Mon,AN,FX,In,goto,interact,countDesk,desk13Event,readRegister,openSafe,bedAct,countTally,openFinalDoor,finalSeq,startChase,startStalk,update,render,kpPress,newGame,continueGame,Snd,hint,scare};
+  requestAnimationFrame(frame);
+}
+boot();
+
+</script>
+</body>
+</html>
