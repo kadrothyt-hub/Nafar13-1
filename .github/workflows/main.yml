@@ -1,0 +1,142 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Create Capacitor project
+        run: |
+          mkdir -p www
+          cp index.html www/index.html
+          npm init -y
+          npm install @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6
+          cat > capacitor.config.json <<'CFG'
+          {
+            "appId": "com.nafar13.game",
+            "appName": "نفر سیزدهم",
+            "webDir": "www",
+            "backgroundColor": "#000000"
+          }
+          CFG
+          npx cap add android
+          npx cap sync android
+
+      - name: Patch Android (landscape, fullscreen, vibration, icon)
+        run: |
+          MF=android/app/src/main/AndroidManifest.xml
+          grep -q screenOrientation $MF || sed -i 's/<activity /<activity android:screenOrientation="sensorLandscape" /' $MF
+          grep -q VIBRATE $MF || sed -i 's#</manifest>#    <uses-permission android:name="android.permission.VIBRATE" />\n</manifest>#' $MF
+          MAIN=$(find android/app/src/main/java -name MainActivity.java | head -n 1)
+          PKG=$(grep -m1 '^package ' "$MAIN" | sed 's/package //; s/;//')
+          cat > "$MAIN" <<JAVA
+          package $PKG;
+
+          import android.os.Build;
+          import android.os.Bundle;
+          import android.view.View;
+          import android.view.WindowManager;
+          import com.getcapacitor.BridgeActivity;
+
+          public class MainActivity extends BridgeActivity {
+              @Override
+              public void onCreate(Bundle savedInstanceState) {
+                  super.onCreate(savedInstanceState);
+                  getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                  if (Build.VERSION.SDK_INT >= 28) {
+                      WindowManager.LayoutParams lp = getWindow().getAttributes();
+                      lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+                      getWindow().setAttributes(lp);
+                  }
+                  hideBars();
+              }
+              @Override
+              public void onWindowFocusChanged(boolean hasFocus) {
+                  super.onWindowFocusChanged(hasFocus);
+                  if (hasFocus) hideBars();
+              }
+              private void hideBars() {
+                  getWindow().getDecorView().setSystemUiVisibility(
+                      View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                      | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                      | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                      | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                      | View.SYSTEM_UI_FLAG_FULLSCREEN
+                      | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+              }
+          }
+          JAVA
+          (python3 - <<'PYEOF'
+          import zlib, struct, math, os
+          def png(path, n):
+              raw = b''
+              for y in range(n):
+                  row = bytearray([0])
+                  for x in range(n):
+                      dx = (x - n / 2) / n
+                      dy = (y - n / 2) / n
+                      r = math.hypot(dx, dy)
+                      c = (11, 13, 16)
+                      if 0.30 < r < 0.37:
+                          c = (163, 21, 28)
+                      if dx > 0 and abs(dy) < dx * 0.45 and r < 0.30:
+                          a = 1 - r / 0.30
+                          c = (int(11 + a * 230), int(13 + a * 220), int(16 + a * 180))
+                      row += bytes(c)
+                  raw += bytes(row)
+              def ch(t, d):
+                  c = struct.pack('>I', len(d)) + t + d
+                  return c + struct.pack('>I', zlib.crc32(t + d) & 0xffffffff)
+              data = b'\x89PNG\r\n\x1a\n' + ch(b'IHDR', struct.pack('>IIBBBBB', n, n, 8, 2, 0, 0, 0)) + ch(b'IDAT', zlib.compress(raw)) + ch(b'IEND', b'')
+              open(path, 'wb').write(data)
+          sizes = {'mdpi': 48, 'hdpi': 72, 'xhdpi': 96, 'xxhdpi': 144, 'xxxhdpi': 192}
+          for d, n in sizes.items():
+              base = 'android/app/src/main/res/mipmap-' + d
+              os.makedirs(base, exist_ok=True)
+              for name in ['ic_launcher', 'ic_launcher_round', 'ic_launcher_foreground']:
+                  png(base + '/' + name + '.png', n)
+          PYEOF
+          rm -rf android/app/src/main/res/mipmap-anydpi-v26) || echo "icon step skipped"
+
+      - name: Build APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Collect APK
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk Nafar13-Episode1.apk
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Nafar13-Episode1-APK
+          path: Nafar13-Episode1.apk
+
+      - name: Publish release (direct download link)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: نفر سیزدهم - ساخت ${{ github.run_number }}
+          files: Nafar13-Episode1.apk
